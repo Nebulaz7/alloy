@@ -93,4 +93,39 @@ interface IAlloyHarvestRouter {
         bytes32 r,
         bytes32 s
     ) external returns (uint256 targetAmountOut);
+
+    /**
+     * @notice Harvests dividend surplus, swaps for target token, routes to one-time stealth address,
+     * and announces the payment via ERC-5564 in a single atomic transaction.
+     * @param stockToken Address of the tokenized stock
+     * @param targetToken Address of the converted currency (e.g. USDC, cNGN)
+     * @param minTargetAmount Minimum acceptable output amount
+     * @param stealthAddress The one-time stealth destination address
+     * @param ephemeralPubKey The sender's ephemeral public key (33 bytes)
+     * @param metadata Supplementary metadata including view tag (1 byte)
+     */
+    function harvestToStealth(
+        address stockToken,
+        address targetToken,
+        uint256 minTargetAmount,
+        address stealthAddress,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata
+    ) external returns (uint256 targetAmountOut);
+
+    /**
+     * @notice Gasless permit + harvest to stealth address in a single transaction.
+     */
+    function harvestToStealthWithPermit(
+        address stockToken,
+        address targetToken,
+        uint256 minTargetAmount,
+        address stealthAddress,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (uint256 targetAmountOut);
 }

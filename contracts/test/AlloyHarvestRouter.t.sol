@@ -42,7 +42,7 @@ contract AlloyHarvestRouterTest is Test {
         cngn.mint(address(dex), 1_000_000_000 * 1e6); // 1B cNGN
 
         // 5. Deploy Router
-        router = new AlloyHarvestRouter(address(dex));
+        router = new AlloyHarvestRouter(address(dex), address(0));
 
         // 6. Fund Alice with 100 shares of AAPLc
         aapl.mint(alice, 100e18);

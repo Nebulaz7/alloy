@@ -10,21 +10,26 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {IB20Asset} from "./interfaces/IB20Asset.sol";
 import {IMockDEX} from "./interfaces/IMockDEX.sol";
 import {IAlloyHarvestRouter} from "./interfaces/IAlloyHarvestRouter.sol";
+import {IERC5564Announcer} from "./interfaces/IERC5564Announcer.sol";
 
 /**
  * @title AlloyHarvestRouter
  * @notice Core routing contract for Alloy.
  * Extracts dividend yield from Base B20 tokenized stocks via surplus share trimming,
  * swaps into the user's chosen currency (USDC, cNGN, etc.), and routes to a destination
- * address (or stealth address) non-custodially.
+ * address (standard or ERC-5564 stealth address) non-custodially.
  */
 contract AlloyHarvestRouter is IAlloyHarvestRouter, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     uint256 public constant MULTIPLIER_BASE = 1e18;
+    uint256 public constant SCHEME_ID_SECP256K1 = 1;
 
     /// @notice Address of the DEX swap router
     address public immutable dexRouter;
+
+    /// @notice Address of the ERC-5564 stealth announcement contract
+    address public immutable announcer;
 
     /// @notice User checkpoints: user => stockToken => UserCheckpoint
     mapping(address => mapping(address => UserCheckpoint)) public checkpoints;
@@ -33,8 +38,9 @@ contract AlloyHarvestRouter is IAlloyHarvestRouter, ReentrancyGuard {
     error ZeroAddressRecipient();
     error InvalidMultiplier();
 
-    constructor(address _dexRouter) {
+    constructor(address _dexRouter, address _announcer) {
         dexRouter = _dexRouter;
+        announcer = _announcer;
     }
 
     /**
@@ -112,7 +118,112 @@ contract AlloyHarvestRouter is IAlloyHarvestRouter, ReentrancyGuard {
         address targetToken,
         uint256 minTargetAmount,
         address recipient
-    ) public override nonReentrant returns (uint256 targetAmountOut) {
+    ) external override nonReentrant returns (uint256 targetAmountOut) {
+        return _harvestToTarget(stockToken, targetToken, minTargetAmount, recipient);
+    }
+
+    /**
+     * @notice Gasless permit + harvest in a single transaction.
+     */
+    function harvestWithPermit(
+        address stockToken,
+        address targetToken,
+        uint256 minTargetAmount,
+        address recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external override nonReentrant returns (uint256 targetAmountOut) {
+        (uint256 surplusShares, ) = getPendingDividend(msg.sender, stockToken);
+        if (surplusShares == 0) revert NoPendingDividend();
+
+        IERC20Permit(stockToken).permit(
+            msg.sender,
+            address(this),
+            surplusShares,
+            deadline,
+            v,
+            r,
+            s
+        );
+
+        return _harvestToTarget(stockToken, targetToken, minTargetAmount, recipient);
+    }
+
+    /**
+     * @notice Harvests dividend surplus, swaps for target token, routes to one-time stealth address,
+     * and announces the payment via ERC-5564 in a single atomic transaction.
+     */
+    function harvestToStealth(
+        address stockToken,
+        address targetToken,
+        uint256 minTargetAmount,
+        address stealthAddress,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata
+    ) external override nonReentrant returns (uint256 targetAmountOut) {
+        targetAmountOut = _harvestToTarget(stockToken, targetToken, minTargetAmount, stealthAddress);
+
+        if (announcer != address(0)) {
+            IERC5564Announcer(announcer).announce(
+                SCHEME_ID_SECP256K1,
+                stealthAddress,
+                ephemeralPubKey,
+                metadata
+            );
+        }
+    }
+
+    /**
+     * @notice Gasless permit + harvest to stealth address in a single transaction.
+     */
+    function harvestToStealthWithPermit(
+        address stockToken,
+        address targetToken,
+        uint256 minTargetAmount,
+        address stealthAddress,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external override nonReentrant returns (uint256 targetAmountOut) {
+        (uint256 surplusShares, ) = getPendingDividend(msg.sender, stockToken);
+        if (surplusShares == 0) revert NoPendingDividend();
+
+        IERC20Permit(stockToken).permit(
+            msg.sender,
+            address(this),
+            surplusShares,
+            deadline,
+            v,
+            r,
+            s
+        );
+
+        targetAmountOut = _harvestToTarget(stockToken, targetToken, minTargetAmount, stealthAddress);
+
+        if (announcer != address(0)) {
+            IERC5564Announcer(announcer).announce(
+                SCHEME_ID_SECP256K1,
+                stealthAddress,
+                ephemeralPubKey,
+                metadata
+            );
+        }
+    }
+
+    /**
+     * @dev Internal logic for dividend harvesting and swapping.
+     */
+    function _harvestToTarget(
+        address stockToken,
+        address targetToken,
+        uint256 minTargetAmount,
+        address recipient
+    ) internal returns (uint256 targetAmountOut) {
         if (recipient == address(0)) revert ZeroAddressRecipient();
 
         (uint256 surplusShares, ) = getPendingDividend(msg.sender, stockToken);
@@ -132,11 +243,9 @@ contract AlloyHarvestRouter is IAlloyHarvestRouter, ReentrancyGuard {
 
         // 3. Swap or route to target
         if (targetToken == stockToken) {
-            // No swap requested, transfer raw stock surplus to recipient
             IERC20(stockToken).safeTransfer(recipient, surplusShares);
             targetAmountOut = surplusShares;
         } else {
-            // Approve DEX and swap into target currency
             IERC20(stockToken).forceApprove(dexRouter, surplusShares);
             targetAmountOut = IMockDEX(dexRouter).swapExactTokensForTokens(
                 stockToken,
@@ -155,35 +264,5 @@ contract AlloyHarvestRouter is IAlloyHarvestRouter, ReentrancyGuard {
             targetAmountOut,
             recipient
         );
-    }
-
-    /**
-     * @notice Gasless permit + harvest in a single transaction.
-     */
-    function harvestWithPermit(
-        address stockToken,
-        address targetToken,
-        uint256 minTargetAmount,
-        address recipient,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external override returns (uint256 targetAmountOut) {
-        (uint256 surplusShares, ) = getPendingDividend(msg.sender, stockToken);
-        if (surplusShares == 0) revert NoPendingDividend();
-
-        // Consume permit for the required surplus amount
-        IERC20Permit(stockToken).permit(
-            msg.sender,
-            address(this),
-            surplusShares,
-            deadline,
-            v,
-            r,
-            s
-        );
-
-        return harvestToTarget(stockToken, targetToken, minTargetAmount, recipient);
     }
 }
