@@ -265,4 +265,118 @@ contract AlloyHarvestRouter is IAlloyHarvestRouter, ReentrancyGuard {
             recipient
         );
     }
+
+    /**
+     * @notice Harvests dividend surplus, swaps for a Base meme coin ($CLANKER, $HIGHER, $DEGEN),
+     * and delivers to recipient.
+     */
+    function harvestToMeme(
+        address stockToken,
+        address memeToken,
+        uint256 minMemeAmount,
+        address recipient
+    ) external override nonReentrant returns (uint256 memeAmountOut) {
+        (uint256 surplusBefore, ) = getPendingDividend(msg.sender, stockToken);
+        memeAmountOut = _harvestToTarget(stockToken, memeToken, minMemeAmount, recipient);
+        emit HarvestedToMeme(msg.sender, stockToken, memeToken, surplusBefore, memeAmountOut, recipient);
+    }
+
+    /**
+     * @notice Gasless permit + harvest into a Base meme coin.
+     */
+    function harvestToMemeWithPermit(
+        address stockToken,
+        address memeToken,
+        uint256 minMemeAmount,
+        address recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external override nonReentrant returns (uint256 memeAmountOut) {
+        (uint256 surplusShares, ) = getPendingDividend(msg.sender, stockToken);
+        if (surplusShares == 0) revert NoPendingDividend();
+
+        IERC20Permit(stockToken).permit(
+            msg.sender,
+            address(this),
+            surplusShares,
+            deadline,
+            v,
+            r,
+            s
+        );
+
+        memeAmountOut = _harvestToTarget(stockToken, memeToken, minMemeAmount, recipient);
+        emit HarvestedToMeme(msg.sender, stockToken, memeToken, surplusShares, memeAmountOut, recipient);
+    }
+
+    /**
+     * @notice Harvests dividend surplus, swaps for a Base meme coin, delivers to a one-time
+     * stealth address, and broadcasts an ERC-5564 announcement.
+     */
+    function harvestToStealthMeme(
+        address stockToken,
+        address memeToken,
+        uint256 minMemeAmount,
+        address stealthAddress,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata
+    ) external override nonReentrant returns (uint256 memeAmountOut) {
+        (uint256 surplusShares, ) = getPendingDividend(msg.sender, stockToken);
+        memeAmountOut = _harvestToTarget(stockToken, memeToken, minMemeAmount, stealthAddress);
+
+        if (announcer != address(0)) {
+            IERC5564Announcer(announcer).announce(
+                SCHEME_ID_SECP256K1,
+                stealthAddress,
+                ephemeralPubKey,
+                metadata
+            );
+        }
+
+        emit HarvestedToMeme(msg.sender, stockToken, memeToken, surplusShares, memeAmountOut, stealthAddress);
+    }
+
+    /**
+     * @notice Gasless permit + harvest to stealth meme destination.
+     */
+    function harvestToStealthMemeWithPermit(
+        address stockToken,
+        address memeToken,
+        uint256 minMemeAmount,
+        address stealthAddress,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external override nonReentrant returns (uint256 memeAmountOut) {
+        (uint256 surplusShares, ) = getPendingDividend(msg.sender, stockToken);
+        if (surplusShares == 0) revert NoPendingDividend();
+
+        IERC20Permit(stockToken).permit(
+            msg.sender,
+            address(this),
+            surplusShares,
+            deadline,
+            v,
+            r,
+            s
+        );
+
+        memeAmountOut = _harvestToTarget(stockToken, memeToken, minMemeAmount, stealthAddress);
+
+        if (announcer != address(0)) {
+            IERC5564Announcer(announcer).announce(
+                SCHEME_ID_SECP256K1,
+                stealthAddress,
+                ephemeralPubKey,
+                metadata
+            );
+        }
+
+        emit HarvestedToMeme(msg.sender, stockToken, memeToken, surplusShares, memeAmountOut, stealthAddress);
+    }
 }

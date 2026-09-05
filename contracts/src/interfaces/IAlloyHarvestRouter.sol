@@ -128,4 +128,86 @@ interface IAlloyHarvestRouter {
         bytes32 r,
         bytes32 s
     ) external returns (uint256 targetAmountOut);
+
+    /**
+     * @notice Emitted when a user harvests dividend surplus into a Base meme coin.
+     * @param user The holder address whose shares were harvested
+     * @param stockToken Address of the tokenized stock (e.g. AAPLc)
+     * @param memeToken Address of the Base meme coin (e.g. $CLANKER, $HIGHER, $DEGEN)
+     * @param surplusShares Amount of raw stock shares trimmed
+     * @param memeAmountOut Amount of meme tokens delivered
+     * @param recipient Recipient wallet or stealth address
+     */
+    event HarvestedToMeme(
+        address indexed user,
+        address indexed stockToken,
+        address indexed memeToken,
+        uint256 surplusShares,
+        uint256 memeAmountOut,
+        address recipient
+    );
+
+    /**
+     * @notice Harvests dividend surplus, swaps for a Base meme coin ($CLANKER, $HIGHER, $DEGEN),
+     * and delivers to recipient.
+     * @param stockToken Address of the tokenized stock
+     * @param memeToken Address of the destination meme token
+     * @param minMemeAmount Minimum acceptable amount of meme tokens (slippage protection)
+     * @param recipient Destination wallet address (sender or a friend's Basename)
+     */
+    function harvestToMeme(
+        address stockToken,
+        address memeToken,
+        uint256 minMemeAmount,
+        address recipient
+    ) external returns (uint256 memeAmountOut);
+
+    /**
+     * @notice Gasless permit + harvest into a Base meme coin.
+     */
+    function harvestToMemeWithPermit(
+        address stockToken,
+        address memeToken,
+        uint256 minMemeAmount,
+        address recipient,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (uint256 memeAmountOut);
+
+    /**
+     * @notice Harvests dividend surplus, swaps for a Base meme coin, delivers to a one-time
+     * stealth address, and broadcasts an ERC-5564 announcement.
+     * @param stockToken Address of the tokenized stock
+     * @param memeToken Address of the Base meme coin
+     * @param minMemeAmount Minimum acceptable amount of meme tokens
+     * @param stealthAddress One-time stealth destination address
+     * @param ephemeralPubKey Ephemeral public key (33 bytes)
+     * @param metadata Supplementary metadata including view tag (1 byte)
+     */
+    function harvestToStealthMeme(
+        address stockToken,
+        address memeToken,
+        uint256 minMemeAmount,
+        address stealthAddress,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata
+    ) external returns (uint256 memeAmountOut);
+
+    /**
+     * @notice Gasless permit + harvest to stealth meme coin destination.
+     */
+    function harvestToStealthMemeWithPermit(
+        address stockToken,
+        address memeToken,
+        uint256 minMemeAmount,
+        address stealthAddress,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (uint256 memeAmountOut);
 }
