@@ -12,7 +12,7 @@ Alloy's design is inspired by modern, consumer-grade, playful fintech products (
    - Pill-shaped buttons and filter tags (`rounded-full`).
    - Inset input fields and pill buttons (`rounded-2xl` / `16px`).
 4. **Signature Card Treatment**:
-   - The primary action/balance card features a **bold, solid green perimeter border (4px)** with a curved, full-width solid green bottom banner pill (e.g., *"Dividends harvested privately through Alloy"*).
+   - The primary action/balance card features a **bold, solid Azure Blue perimeter border (4px)** with a curved, full-width solid Azure Blue bottom banner pill (e.g., *"Dividends harvested privately through Alloy"*).
 5. **Expressive Mascot & Visual Micro-Elements**:
    - Playful mascot character (winking Alloy coin / friendly flame sticker).
    - Customizable user profiles featuring 3D playful emoji avatars and bold background color badges.
@@ -36,13 +36,13 @@ Alloy's design is inspired by modern, consumer-grade, playful fintech products (
 ### 2.2 Playful Brand & Accent Colors
 | Role | Hex | Tailwind Equivalent | Usage |
 | :--- | :--- | :--- | :--- |
-| **Signature Emerald** | `#00D26A` / `#10B981` | `emerald-500` / `green-500` | Primary hero card border, success badges, main CTA button |
-| **Soft Mint** | `#DCFCE7` | `emerald-100` | Active mobile icon badge background, notification pills |
-| **Solid Dark** | `#111827` | `gray-900` | Primary active filter pills (`All`), dark CTA buttons |
+| **Primary Azure Blue** | `#007FFF` / `#0066FF` | `blue-600` / `sky-500` | Primary hero card border, main CTA buttons, brand badges, active dock icon |
+| **Soft Azure / Ice Tint** | `#E0F2FE` / `#EFF6FF` | `sky-100` / `blue-50` | Active mobile icon badge background, notification pills, subtle hover fills |
+| **Positive Green** | `#10B981` | `emerald-500` | Incoming transaction values (`+100 USDC`), positive yield indicators, checkmarks |
+| **Solid Dark** | `#111827` | `gray-900` | Primary active filter pills (`All`), high-contrast dark buttons |
 | **Playful Purple** | `#A855F7` | `purple-500` | Currency preference icon |
 | **Playful Amber** | `#F59E0B` | `amber-500` | Connected wallet icon, gold dividend alert badge |
 | **Playful Coral** | `#EF4444` | `red-500` | Logout icon, disconnect action |
-| **Playful Blue** | `#3B82F6` | `blue-500` | Basename `.base.eth` identity badge, Base network badge |
 
 ---
 
@@ -82,7 +82,7 @@ A clean, focused split-layout:
 - **Floating Bottom Navigation Dock**:
   - Detached, floating rounded pill bar (`rounded-full`, `bg-white`, subtle shadow and hairline border).
   - Fixed at `bottom-5 inset-x-4 max-w-sm mx-auto z-50`.
-  - Active tab is highlighted with a cute soft mint green squircle/pill background (`#DCFCE7`) and solid green icon.
+  - Active tab is highlighted with a cute soft Azure Blue squircle/pill background (`#E0F2FE`) and solid Azure Blue icon (`#007FFF`).
   - Inactive tabs use clean line icons in soft gray (`#9CA3AF`).
 
 ---
@@ -98,13 +98,13 @@ A clean, focused split-layout:
 - **Basename / Username Claiming**:
   - Interactive nametag preview card (`alloy.base.eth/username` or `username.base.eth`).
   - Search input with live availability feedback.
-  - Card dynamically turns **vivid lime green** with a checkmark pill (*"Username is available!"*) when valid.
+  - Card dynamically turns **vivid Azure Blue** (`bg-[#007FFF]` / `border-[#007FFF]`) with a checkmark pill (*"Username is available!"*) when valid.
 - **Profile Customization Modal**:
   - Emoji & background color picker (10 pastel color swatches + 3D emoji grid + *"Surprise me!"* dice button).
 
 ### 5.2 Dashboard (`/dashboard`)
 1. **Signature Balance Card (Hero)**:
-   - Thick emerald border (`border-4 border-[#00D26A]`) with solid bottom footer banner:
+   - Thick Azure Blue border (`border-4 border-[#007FFF]`) with solid bottom footer banner:
      *"Dividends harvested privately through Alloy"*.
    - Total equity balance and accrued dividend yield (`+$124.50`).
    - Token list:
@@ -157,9 +157,44 @@ All modals use centered rounded cards (`rounded-3xl`), pure white backgrounds, s
 
 ---
 
-## 7. Next Steps & Implementation Roadmap
+---
 
-- [ ] **Figma Assets**: User connects Figma for custom SVG icons, mascots, and stickers.
-- [ ] **Dependencies**: Install `wagmi`, `viem`, `@tanstack/react-query`, Lucide icons, and secp256k1 crypto tools.
-- [ ] **Components**: Build the shared UI primitives (Buttons, Cards, Modals, Pills, Sidebar, Floating Bottom Dock) conforming to this light, playful specification.
-- [ ] **Contract Integration**: Wire components to the Base Sepolia deployed contracts.
+## 7. Step-by-Step Element Design Blueprint (Collaborative Phase)
+
+Since Figma elements will be crafted directly together, we design and review the visual elements sequentially:
+
+1. **Element 1: Brand Mark & Mascot (`Alloy Mascot`)**
+   - Winking, cheerful Alloy coin/ingot mascot vector.
+   - Clean typographic wordmark (`Alloy`) with Azure Blue dot/accent.
+   - Small `"BETA"` pill tag (`#F3F4F6` with `#6B7280` text).
+
+2. **Element 2: Core Surface & The Signature Card**
+   - Clean squircle card container (`rounded-3xl`, `#FFFFFF`, subtle border `#E5E7EB`, gentle shadow).
+   - **Signature Hero Card**: 4px solid Azure Blue border (`#007FFF`) with bottom-docked solid Azure Blue pill ribbon: *"Dividends harvested privately through Alloy"*.
+   - Inset action containers (`rounded-2xl`, `#F9FAFB`).
+
+3. **Element 3: Navigation Shells (Desktop & Mobile)**
+   - **Desktop Left Sidebar**: App brand header, rounded navigation item pills with soft active backgrounds, and bottom promotional doodle card (*"Alloy is currently in beta on Base Sepolia"*).
+   - **Mobile Floating Bottom Dock**: Detached floating pill bar with active tab highlighted by a soft Azure Blue squircle (`#E0F2FE`) and solid Azure Blue icon (`#007FFF`).
+
+4. **Element 4: Profile & Interactive Nametag Card**
+   - Onboarding nametag card (`alloy.base.eth/username` or `username.base.eth`).
+   - Dynamic activation: Transitions to solid Azure Blue (`bg-[#007FFF]`, white text) with an *"Available!"* checkmark pill.
+   - Profile avatar preview with 3D playful emoji icon & color badge.
+
+5. **Element 5: Avatar Customization System**
+   - 10 solid playful color swatches with active selection ring.
+   - Curated grid of 16 playful 3D-style emojis (money bag, sparkle, diamond, rocket, etc.).
+   - *"Surprise me!"* dice button pill.
+
+6. **Element 6: Activity & Transaction Rows**
+   - Circular token/user avatar with directional badge (green down-arrow for incoming harvests).
+   - Bold amount display (`+100 USDC` in `#10B981`, or meme coins).
+   - Micro-metadata pills (`personal`, `stealth payout`, BaseScan link).
+
+7. **Element 7: Modals & Dialogs**
+   - Currency Picker modal with search bar, country pills, and green checkmark.
+   - Connected Wallets modal with address copy, `Export ->` pill, and privacy explainer.
+   - QR Code share modal with clean framed SVG QR code and handle pill.
+   - Interactive Dividend Simulator modal (+`$2.50`/share test trigger).
+
