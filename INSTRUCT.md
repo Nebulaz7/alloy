@@ -41,13 +41,15 @@ Wrap your application in `<AlloyProviders>` in `app/layout.tsx`. This enables Wa
 import { AlloyProviders } from "@/lib/providers";
 import "./globals.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
-        <AlloyProviders>
-          {children}
-        </AlloyProviders>
+        <AlloyProviders>{children}</AlloyProviders>
       </body>
     </html>
   );
@@ -63,17 +65,26 @@ All hooks in `lib/hooks/` were engineered to match the exact TypeScript interfac
 ---
 
 ### Recipe 1: Connecting `SignatureHeroCard` (Dashboard Hero)
+
 **Component**: [`components/ui/SignatureHeroCard.tsx`](file:///C:/Users/PC/desktop/coding/alloy/app/components/ui/SignatureHeroCard.tsx)  
 **Hook**: [`useAlloyStocks()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/hooks/useAlloyStocks.ts)
 
 `useAlloyStocks()` returns `stocks`, `totalDividendsEarned`, and `availableToHarvest` matching the exact `StockTokenItem[]` prop of `SignatureHeroCard`.
 
 ```tsx
-import { SignatureHeroCard, StockTokenItem } from "@/components/ui/SignatureHeroCard";
+import {
+  SignatureHeroCard,
+  StockTokenItem,
+} from "@/components/ui/SignatureHeroCard";
 import { useAlloyStocks } from "@/lib/hooks/useAlloyStocks";
 
-export function DashboardHero({ onSelectStock }: { onSelectStock?: (stock: StockTokenItem) => void }) {
-  const { stocks, totalDividendsEarned, availableToHarvest, isLoading } = useAlloyStocks();
+export function DashboardHero({
+  onSelectStock,
+}: {
+  onSelectStock?: (stock: StockTokenItem) => void;
+}) {
+  const { stocks, totalDividendsEarned, availableToHarvest, isLoading } =
+    useAlloyStocks();
 
   return (
     <SignatureHeroCard
@@ -93,6 +104,7 @@ export function DashboardHero({ onSelectStock }: { onSelectStock?: (stock: Stock
 ---
 
 ### Recipe 2: Connecting `PersonalLinkCard` (Stealth Handle)
+
 **Component**: [`components/ui/PersonalLinkCard.tsx`](file:///C:/Users/PC/desktop/coding/alloy/app/components/ui/PersonalLinkCard.tsx)  
 **Store**: [`useProfile()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/store/profileStore.tsx)
 
@@ -129,6 +141,7 @@ export function PersonalLinkSection() {
 ---
 
 ### Recipe 3: Connecting `DividendSimModal` (Onchain Testing)
+
 **Component**: [`components/modals/DividendSimModal.tsx`](file:///C:/Users/PC/desktop/coding/alloy/app/components/modals/DividendSimModal.tsx)  
 **Hook**: [`useSimulator()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/hooks/useSimulator.ts)
 
@@ -139,7 +152,13 @@ import { DividendSimModal } from "@/components/modals/DividendSimModal";
 import { useSimulator } from "@/lib/hooks/useSimulator";
 import { useAlloyStocks } from "@/lib/hooks/useAlloyStocks";
 
-export function SimulatorPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function SimulatorPopup({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const { simulateDividend, isSimulating } = useSimulator();
   const { refetch } = useAlloyStocks();
 
@@ -161,6 +180,7 @@ export function SimulatorPopup({ isOpen, onClose }: { isOpen: boolean; onClose: 
 ---
 
 ### Recipe 4: Connecting `NametagClaimFlow` (Onboarding)
+
 **Component**: [`components/profile/NametagClaimFlow.tsx`](file:///C:/Users/PC/desktop/coding/alloy/app/components/profile/NametagClaimFlow.tsx)  
 **Hook**: [`useBasename()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/hooks/useBasename.ts)  
 **Store**: [`useProfile()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/store/profileStore.tsx)
@@ -195,6 +215,7 @@ export default function OnboardingPage() {
 ---
 
 ### Recipe 5: Connecting `ConnectedWalletsModal` (Settings)
+
 **Component**: [`components/modals/ConnectedWalletsModal.tsx`](file:///C:/Users/PC/desktop/coding/alloy/app/components/modals/ConnectedWalletsModal.tsx)  
 **Hook**: `useAccount()` from Wagmi + `profile.stealthKeyPair`
 
@@ -203,7 +224,13 @@ import { ConnectedWalletsModal } from "@/components/modals/ConnectedWalletsModal
 import { useAccount } from "wagmi";
 import { useProfile } from "@/lib/store/profileStore";
 
-export function WalletsModalWrapper({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function WalletsModalWrapper({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const { address } = useAccount();
   const { profile } = useProfile();
 
@@ -220,6 +247,7 @@ export function WalletsModalWrapper({ isOpen, onClose }: { isOpen: boolean; onCl
 ---
 
 ### Recipe 6: Connecting `ActivityRow` & `TxDetailModal` (Activities Page)
+
 **Component**: [`components/ui/ActivityRow.tsx`](file:///C:/Users/PC/desktop/coding/alloy/app/components/ui/ActivityRow.tsx) & [`components/modals/TxDetailModal.tsx`](file:///C:/Users/PC/desktop/coding/alloy/app/components/modals/TxDetailModal.tsx)  
 **Store**: [`useActivity()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/store/activityStore.tsx)
 
@@ -263,6 +291,7 @@ export function ActivitiesList({ filterTab }: { filterTab: string }) {
 ---
 
 ### Recipe 7: Connecting `CurrencyPickerModal` (Settings)
+
 **Component**: [`components/modals/CurrencyPickerModal.tsx`](file:///C:/Users/PC/desktop/coding/alloy/app/components/modals/CurrencyPickerModal.tsx)  
 **Store**: [`useProfile()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/store/profileStore.tsx)
 
@@ -270,7 +299,13 @@ export function ActivitiesList({ filterTab }: { filterTab: string }) {
 import { CurrencyPickerModal } from "@/components/modals/CurrencyPickerModal";
 import { useProfile } from "@/lib/store/profileStore";
 
-export function CurrencyModalWrapper({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function CurrencyModalWrapper({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const { profile, setCurrency } = useProfile();
 
   return (
@@ -290,6 +325,7 @@ export function CurrencyModalWrapper({ isOpen, onClose }: { isOpen: boolean; onC
 ---
 
 ### Recipe 8: Executing Dividend Harvests (Harvest Studio)
+
 **Hook**: [`useHarvest()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/hooks/useHarvest.ts)
 
 Supports 1-click execution for standard wallet claims, Basename stealth routing, and Base meme coin auto-swaps:
@@ -332,6 +368,7 @@ export function HarvestButton() {
 ---
 
 ### Recipe 9: Scanning & Gasless Sweeping (Stealth Inbox)
+
 **Hook**: [`useStealthInbox()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/hooks/useStealthInbox.ts)
 
 Scans onchain announcements matching your viewing key, recovers 0-ETH private keys, and calls `AlloyStealthRelayer` with an EIP-2612 permit:
@@ -340,13 +377,26 @@ Scans onchain announcements matching your viewing key, recovers 0-ETH private ke
 import { useStealthInbox } from "@/lib/hooks/useStealthInbox";
 
 export function StealthInboxWidget() {
-  const { payments, totalUnclaimedUsd, isScanning, isSweeping, scanInbox, sweepPayment } = useStealthInbox();
+  const {
+    payments,
+    totalUnclaimedUsd,
+    isScanning,
+    isSweeping,
+    scanInbox,
+    sweepPayment,
+  } = useStealthInbox();
 
   return (
     <div className="p-4 bg-white rounded-2xl border border-neutral-200">
       <div className="flex justify-between items-center mb-3">
-        <h4 className="font-heading font-medium">Unclaimed Stealth Dividends</h4>
-        <button onClick={scanInbox} disabled={isScanning} className="text-xs text-[#007FFF]">
+        <h4 className="font-heading font-medium">
+          Unclaimed Stealth Dividends
+        </h4>
+        <button
+          onClick={scanInbox}
+          disabled={isScanning}
+          className="text-xs text-[#007FFF]"
+        >
           {isScanning ? "Scanning logs..." : "Scan Base Sepolia"}
         </button>
       </div>
@@ -356,14 +406,21 @@ export function StealthInboxWidget() {
       </div>
 
       {payments.map((p) => (
-        <div key={p.stealthAddress} className="flex justify-between items-center py-2 border-t text-sm">
-          <span>{p.balance} USDC on {p.stealthAddress.slice(0, 8)}...</span>
+        <div
+          key={p.stealthAddress}
+          className="flex justify-between items-center py-2 border-t text-sm"
+        >
+          <span>
+            {p.balance} USDC on {p.stealthAddress.slice(0, 8)}...
+          </span>
           <button
             onClick={() => sweepPayment(p)}
             disabled={isSweeping === p.stealthAddress}
             className="px-3 py-1 bg-[#007FFF] text-white rounded-xl text-xs"
           >
-            {isSweeping === p.stealthAddress ? "Sweeping..." : "Gasless Sweep (0 ETH)"}
+            {isSweeping === p.stealthAddress
+              ? "Sweeping..."
+              : "Gasless Sweep (0 ETH)"}
           </button>
         </div>
       ))}
@@ -375,6 +432,7 @@ export function StealthInboxWidget() {
 ---
 
 ### Recipe 10: Token Balances Table & Faucets (Settings / Demo)
+
 **Hook**: [`useTokenBalances()`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/hooks/useTokenBalances.ts)
 
 Displays all 9 deployed tokens with 1-click test mint buttons for judges:
@@ -383,21 +441,29 @@ Displays all 9 deployed tokens with 1-click test mint buttons for judges:
 import { useTokenBalances } from "@/lib/hooks/useTokenBalances";
 
 export function TokenBalancesSection() {
-  const { ethBalance, balances, isMinting, mintTestTokens } = useTokenBalances();
+  const { ethBalance, balances, isMinting, mintTestTokens } =
+    useTokenBalances();
 
   return (
     <div className="space-y-3">
-      <div className="text-sm text-neutral-500">Base Sepolia Gas: {ethBalance}</div>
+      <div className="text-sm text-neutral-500">
+        Base Sepolia Gas: {ethBalance}
+      </div>
 
       <div className="space-y-2">
         {balances.map((token) => (
-          <div key={token.symbol} className="flex justify-between items-center p-3 bg-neutral-50 rounded-xl">
+          <div
+            key={token.symbol}
+            className="flex justify-between items-center p-3 bg-neutral-50 rounded-xl"
+          >
             <div className="flex items-center gap-2">
               <span>{token.symbolEmoji}</span>
               <span className="font-medium">{token.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="font-heading">{token.balanceFormatted} {token.symbol}</span>
+              <span className="font-heading">
+                {token.balanceFormatted} {token.symbol}
+              </span>
               <button
                 onClick={() => mintTestTokens(token.symbol, "100")}
                 disabled={isMinting === token.symbol}
@@ -421,6 +487,7 @@ export function TokenBalancesSection() {
 The connection configuration in [`lib/wagmi.ts`](file:///C:/Users/PC/desktop/coding/alloy/app/lib/wagmi.ts) works out-of-the-box with standard Wagmi fallback.
 
 To enable the official Reown modal (with QR code and mobile wallet deep links):
+
 1. Visit [cloud.reown.com](https://cloud.reown.com) (free, 30-second sign up).
 2. Create a project named **Alloy**.
 3. Copy your **Project ID**.
@@ -430,6 +497,7 @@ To enable the official Reown modal (with QR code and mobile wallet deep links):
    ```
 
 To trigger the Reown connect modal from any button:
+
 ```tsx
 import { getAppKit } from "@/lib/wagmi";
 
@@ -440,7 +508,10 @@ export function ConnectButton() {
   };
 
   return (
-    <button onClick={openModal} className="px-5 py-2.5 bg-[#007FFF] text-white rounded-xl font-medium">
+    <button
+      onClick={openModal}
+      className="px-5 py-2.5 bg-[#007FFF] text-white rounded-xl font-medium"
+    >
       Connect Wallet
     </button>
   );
