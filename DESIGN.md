@@ -175,11 +175,11 @@ All modals use centered rounded cards (`rounded-3xl`), pure white backgrounds, s
    - Official SVG logos for Apple, Nvidia, and Coinbase.
    - Rectangular buttons with rounded corners (`rounded-xl` / `rounded-2xl`).
 
-3. **Element 3: Navigation Shells (Desktop & Mobile)** [Next]
+3. **Element 3: Navigation Shells (Desktop & Mobile)** [Completed]
    - **Desktop Left Sidebar**: App brand header, rounded navigation item pills with soft active backgrounds, and bottom promotional doodle card (*"Alloy is currently in beta on Base Sepolia"*).
    - **Mobile Floating Bottom Dock**: Detached floating pill bar with active tab highlighted by a soft Azure Blue squircle (`#E0F2FE`) and solid Azure Blue icon (`#007FFF`).
 
-4. **Element 4: Profile & Interactive Nametag Card**
+4. **Element 4: Profile & Interactive Nametag Card** [Next]
    - Onboarding nametag card (`alloy.base.eth/username` or `username.base.eth`).
    - Dynamic activation: Transitions to solid Azure Blue (`bg-[#007FFF]`, white text) with an *"Available!"* checkmark pill.
    - Profile avatar preview with 3D playful emoji icon & color badge.
