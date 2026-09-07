@@ -240,8 +240,14 @@ export default function Home() {
   const handleSimulateDividend = () => {
     setIsSimulating(true);
     setTimeout(() => {
-      setSimMultiplier((prev) => +(prev + 0.015).toFixed(3));
-      setSimSurplus((prev) => +(prev + 75.0).toFixed(2));
+      const newMult = +(aaplMultiplier * 1.0125).toFixed(3);
+      const surplusInc = 75.0;
+      setAaplMultiplier(newMult);
+      setAaplSurplus((prev) => +(prev + surplusInc).toFixed(2));
+      setAvailableHarvest((prev) => +(prev + surplusInc).toFixed(2));
+      setTotalDividends((prev) => +(prev + surplusInc).toFixed(2));
+      setSimMultiplier(newMult);
+      setSimSurplus((prev) => +(prev + surplusInc).toFixed(2));
       setIsSimulating(false);
     }, 900);
   };
@@ -341,14 +347,6 @@ export default function Home() {
                   >
                     <Sparkles className="w-3.5 h-3.5 text-neutral-500" />
                     <span>Basename Setup</span>
-                  </button>
-
-                  <button
-                    onClick={() => setShowSimModal(true)}
-                    className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#E0F2FE] hover:bg-[#BAE6FD] text-[#007FFF] border border-[#BAE6FD] transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-[#007FFF]" />
-                    <span>Simulate Dividend</span>
                   </button>
 
                   <button
@@ -517,27 +515,16 @@ export default function Home() {
           <div className="space-y-6">
             {/* Header description */}
             <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 shadow-xs space-y-2">
-              <div className="flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E0F2FE] text-[#007FFF] text-xs font-normal">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Private 1-Click Dividend Rail</span>
-                  </div>
-                  <h2 className="font-heading font-medium text-2xl text-neutral-900">
-                    Harvest Studio
-                  </h2>
-                  <p className="text-sm text-neutral-500 font-normal">
-                    Extract your accrued stock dividends without selling or touching your equity principal. Funds are routed directly or to private stealth addresses.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowSimModal(true)}
-                  className="px-3.5 py-2 rounded-2xl bg-[#E0F2FE] hover:bg-[#BAE6FD] text-[#007FFF] border border-[#BAE6FD] text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#007FFF]" />
-                  <span>Simulate Payout</span>
-                </button>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E0F2FE] text-[#007FFF] text-xs font-normal">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Private 1-Click Dividend Rail</span>
               </div>
+              <h2 className="font-heading font-medium text-2xl text-neutral-900">
+                Harvest Studio
+              </h2>
+              <p className="text-sm text-neutral-500 font-normal">
+                Extract your accrued stock dividends without selling or touching your equity principal. Funds are routed directly or to private stealth addresses.
+              </p>
             </div>
 
             {/* Step 1: Choose Equity Asset */}
@@ -817,63 +804,119 @@ export default function Home() {
                 Dividend Multiplier Simulator
               </h2>
               <p className="text-sm text-neutral-500 font-normal">
-                Test the smart contract dividend distribution flow live. Triggering a dividend increases the stock asset multiplier and dynamically generates harvestable surplus.
+                Test the smart contract dividend distribution flow live. Triggering a corporate dividend increases the tokenized equity asset multiplier and dynamically generates harvestable surplus without touching principal shares.
               </p>
             </div>
 
             {/* Live Stats */}
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white rounded-3xl border border-neutral-200/80 p-5 shadow-xs space-y-1">
-                <div className="text-xs text-neutral-400 font-normal">Current Multiplier</div>
+                <div className="text-xs text-neutral-400 font-normal">Current Multiplier (AAPLc)</div>
                 <div className="text-2xl font-medium text-[#007FFF] font-mono">
-                  {simMultiplier.toFixed(3)}x
+                  {aaplMultiplier.toFixed(3)}x
                 </div>
                 <div className="text-[11px] text-[#10B981] font-medium">
-                  +1.5% dividend increment
+                  +{((aaplMultiplier - 1) * 100).toFixed(1)}% dividend yield accrued
                 </div>
               </div>
 
               <div className="bg-white rounded-3xl border border-neutral-200/80 p-5 shadow-xs space-y-1">
                 <div className="text-xs text-neutral-400 font-normal">Harvestable Surplus</div>
                 <div className="text-2xl font-medium text-[#10B981] font-mono">
-                  +${simSurplus.toFixed(2)}
+                  +{currSymbol}{aaplSurplus.toFixed(2)}
                 </div>
                 <div className="text-[11px] text-neutral-400 font-normal">
-                  No principal affected
+                  100% equity principal untouched
                 </div>
               </div>
             </div>
 
-            {/* Trigger Button */}
+            {/* Primary Action Card: Simulate Dividend Modal & Quick Actions */}
             <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 shadow-xs space-y-4">
-              <div className="text-xs font-heading font-medium text-neutral-400 uppercase tracking-wider">
-                Simulate Corporate Action
+              <div className="space-y-1">
+                <div className="text-xs font-heading font-medium text-neutral-400 uppercase tracking-wider">
+                  Corporate Action Simulation
+                </div>
+                <h3 className="font-heading font-medium text-lg text-neutral-900">
+                  Simulate Corporate Dividend
+                </h3>
+                <p className="text-xs text-neutral-500 font-normal">
+                  Launch the corporate dividend simulator dialog to customize payout per share, select stock tokens (Apple, Nvidia, Coinbase), and trigger live onchain multiplier jumps.
+                </p>
               </div>
 
-              <p className="text-xs text-neutral-500 font-normal">
-                Calls <code className="font-mono bg-neutral-100 px-1 py-0.5 rounded text-neutral-800">AlloyRebalancer.distributeDividend()</code> on the Base Sepolia testnet to credit all Apple (<code className="font-mono text-neutral-800">AAPLc</code>) shareholders.
-              </p>
-
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                {/* The Primary "Simulate Dividend" button requested by user */}
                 <Button
                   variant="primary"
+                  size="lg"
+                  onClick={() => setShowSimModal(true)}
+                  className="flex items-center gap-2 shadow-xs"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Simulate Dividend</span>
+                </Button>
+
+                {/* Quick 1-click Test action */}
+                <Button
+                  variant="azure-light"
+                  size="lg"
                   isLoading={isSimulating}
                   onClick={handleSimulateDividend}
                   className="flex items-center gap-2"
                 >
                   <RefreshCw className={`w-4 h-4 ${isSimulating ? "animate-spin" : ""}`} />
-                  <span>{isSimulating ? "Distributing on Chain..." : "Distribute +$2.50 Dividend"}</span>
+                  <span>{isSimulating ? "Distributing on Base..." : "Quick Distribute (+$2.50)"}</span>
                 </Button>
 
+                {/* Reset to initial state */}
                 <Button
-                  variant="azure-light"
+                  variant="ghost"
+                  size="lg"
                   onClick={() => {
+                    setAaplMultiplier(1.025);
+                    setAaplSurplus(75.0);
+                    setAvailableHarvest(124.5);
+                    setTotalDividends(1428.5);
                     setSimMultiplier(1.025);
-                    setSimSurplus(124.50);
+                    setSimSurplus(124.5);
                   }}
+                  className="text-neutral-500 hover:text-neutral-700"
                 >
                   Reset
                 </Button>
+              </div>
+            </div>
+
+            {/* Smart Contract Info Card */}
+            <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-heading font-medium text-neutral-400 uppercase tracking-wider">
+                  Target Smart Contract
+                </span>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#E0F2FE] text-[#007FFF] font-normal border border-[#BAE6FD]">
+                  Base Sepolia Hook
+                </span>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-100 flex items-center justify-between">
+                <div>
+                  <div className="font-heading font-medium text-xs text-neutral-800">
+                    AlloyRebalancer (ERC-7535 Multiplier Rail)
+                  </div>
+                  <div className="text-[11px] font-mono text-neutral-400 font-normal">
+                    0x78BFE2A2fB2D6bE4924A1948B0c7F9B93563459c
+                  </div>
+                </div>
+                <a
+                  href="https://sepolia.basescan.org/address/0x78BFE2A2fB2D6bE4924A1948B0c7F9B93563459c"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 rounded-xl hover:bg-neutral-200/60 text-neutral-500 hover:text-neutral-800 transition-colors"
+                  aria-label="View on BaseScan"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </div>
