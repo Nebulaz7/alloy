@@ -141,7 +141,7 @@ export default function LoginPage() {
 
             <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-neutral-900">
               Connect to{" "}
-              <span className="logo-font text-[#007FFF]"> Alloy </span>
+              <span className="logo-font text-[#007FFF]"> alloy </span>
             </h1>
             <p className="text-xs sm:text-sm text-neutral-500 font-normal max-w-xs mx-auto">
               Harvest tokenized stock dividends privately on Base Sepolia.
