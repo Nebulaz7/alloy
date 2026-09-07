@@ -9,13 +9,15 @@ import { AlloyLogo } from "@/components/brand/AlloyLogo";
 
 interface NametagClaimFlowProps {
   initialUsername?: string;
+  connectedAddress?: string;
   onComplete?: (profile: ProfileData) => void;
   onBack?: () => void;
   className?: string;
 }
 
 export const NametagClaimFlow: React.FC<NametagClaimFlowProps> = ({
-  initialUsername = "nebula",
+  initialUsername = "",
+  connectedAddress,
   onComplete,
   onBack,
   className = "",
@@ -26,7 +28,7 @@ export const NametagClaimFlow: React.FC<NametagClaimFlowProps> = ({
     username: initialUsername,
     avatarEmoji: "🎧",
     avatarBg: "#18181B",
-    address: "0xD5687794c8E1b69F477911Df56170679CB6414eC",
+    address: connectedAddress || "0xD5687794c8E1b69F477911Df56170679CB6414eC",
     isVerified: true,
   });
 

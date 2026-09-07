@@ -13,11 +13,13 @@ export interface UserProfile {
   currency: "USD" | "EUR" | "NGN" | "GBP";
   currencySymbol: string;
   stealthKeyPair: StealthKeyPair | null;
+  isClaimed: boolean;
 }
 
 interface ProfileContextType {
   profile: UserProfile;
   updateProfile: (data: Partial<UserProfile>) => void;
+  loadProfileForAddress: (addr: string) => boolean;
   setCurrency: (curr: "USD" | "EUR" | "NGN" | "GBP") => void;
   resetProfile: () => void;
   isHydrated: boolean;
@@ -40,6 +42,7 @@ const DEFAULT_PROFILE: UserProfile = {
   currency: "USD",
   currencySymbol: "$",
   stealthKeyPair: null,
+  isClaimed: true,
 };
 
 const STORAGE_KEY = "alloy_profile_v1";
@@ -88,9 +91,45 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        if (updated.address) {
+          localStorage.setItem(`alloy_profile_${updated.address.toLowerCase()}`, JSON.stringify(updated));
+        }
       } catch {}
       return updated;
     });
+  }, []);
+
+  const loadProfileForAddress = React.useCallback((addr: string): boolean => {
+    if (!addr) return false;
+    try {
+      const perAddressKey = `alloy_profile_${addr.toLowerCase()}`;
+      const stored = localStorage.getItem(perAddressKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setProfile((prev) => ({
+          ...prev,
+          ...parsed,
+          address: addr,
+          isClaimed: true,
+        }));
+        return true;
+      } else {
+        // Fresh address without a saved profile
+        const freshKeys = generateStealthKeyPair();
+        setProfile((prev) => ({
+          ...prev,
+          username: "",
+          basename: "",
+          address: addr,
+          isVerified: false,
+          isClaimed: false,
+          stealthKeyPair: freshKeys,
+        }));
+        return false;
+      }
+    } catch {
+      return false;
+    }
   }, []);
 
   const setCurrency = React.useCallback((currency: UserProfile["currency"]) => {
@@ -111,6 +150,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       value={{
         profile,
         updateProfile,
+        loadProfileForAddress,
         setCurrency,
         resetProfile,
         isHydrated,

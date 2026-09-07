@@ -28,7 +28,7 @@ export default function LoginPage() {
   const { isConnected, address } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, loadProfileForAddress } = useProfile();
   const [connectingType, setConnectingType] = useState<
     "coinbase" | "reown" | null
   >(null);
@@ -36,9 +36,9 @@ export default function LoginPage() {
   // Sync connected wallet address to profile store if changed
   useEffect(() => {
     if (isConnected && address && profile.address !== address) {
-      updateProfile({ address });
+      loadProfileForAddress(address);
     }
-  }, [isConnected, address, profile.address, updateProfile]);
+  }, [isConnected, address, profile.address, loadProfileForAddress]);
 
   // Handler 1: Connect via Coinbase Smart Wallet (Passkey / WebAuthn)
   const handleConnectCoinbase = async () => {
@@ -86,7 +86,14 @@ export default function LoginPage() {
 
   // Handler 3: Continue in Demo / Preview Mode
   const handlePreviewMode = () => {
-    // Navigate directly to app experience
+    updateProfile({
+      username: "nebula",
+      basename: "nebula.base.eth",
+      avatarEmoji: "🎧",
+      avatarBg: "#18181B",
+      isClaimed: true,
+      isVerified: true,
+    });
     router.push("/dashboard");
   };
 
@@ -150,41 +157,72 @@ export default function LoginPage() {
 
           {/* Connected State Banner (if already connected via Wagmi) */}
           {isConnected && address ? (
-            <div className="p-4 rounded-2xl bg-[#F0FDF4] border border-[#BBF7D0] space-y-3">
+            <div className="p-4 rounded-2xl bg-[#F9FAFB] border border-neutral-200/80 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse" />
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full animate-pulse ${
+                      profile.isClaimed ? "bg-[#10B981]" : "bg-[#007FFF]"
+                    }`}
+                  />
                   <span className="text-xs font-medium text-neutral-900">
                     Wallet Connected
                   </span>
                 </div>
                 <button
                   onClick={() => disconnect()}
-                  className="text-xs text-neutral-400 hover:text-[#EF4444] transition-colors flex items-center gap-1"
+                  className="text-xs text-neutral-400 hover:text-[#EF4444] transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   <LogOut className="w-3 h-3" />
                   <span>Disconnect</span>
                 </button>
               </div>
 
-              <div className="font-mono text-xs font-medium text-neutral-800 bg-white/80 px-3 py-2 rounded-xl border border-[#BBF7D0]/60 flex items-center justify-between">
+              <div className="font-mono text-xs font-medium text-neutral-800 bg-white px-3 py-2 rounded-xl border border-neutral-200 flex items-center justify-between">
                 <span>
-                  {address.slice(0, 8)}...{address.slice(-6)}
+                  {profile.isClaimed && profile.basename
+                    ? profile.basename
+                    : `${address.slice(0, 8)}...${address.slice(-6)}`}
                 </span>
-                <span className="text-[10px] text-[#10B981] font-sans font-medium px-2 py-0.5 rounded-full bg-[#DCFCE7]">
-                  Base Active
+                <span
+                  className={`text-[10px] font-sans font-medium px-2 py-0.5 rounded-full ${
+                    profile.isClaimed
+                      ? "text-[#10B981] bg-[#DCFCE7]"
+                      : "text-[#007FFF] bg-[#E0F2FE]"
+                  }`}
+                >
+                  {profile.isClaimed ? "Base Active" : "New Account"}
                 </span>
               </div>
 
-              <Button
-                variant="emerald"
-                size="lg"
-                onClick={() => router.push("/dashboard")}
-                className="w-full justify-center text-sm py-3.5 shadow-xs"
-              >
-                <span>Continue to Dashboard</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              {!profile.isClaimed ? (
+                /* New Profile Action */
+                <div className="space-y-3 pt-1">
+                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
+                    No Basename claimed yet for this address. Set up your identity to start receiving dividends.
+                  </p>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
+                    onClick={() => router.push("/onboarding")}
+                    className="w-full justify-center text-sm py-3.5 shadow-xs cursor-pointer"
+                  >
+                    Set Up Profile
+                  </Button>
+                </div>
+              ) : (
+                /* Existing Profile Action */
+                <Button
+                  variant="emerald"
+                  size="lg"
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                  onClick={() => router.push("/dashboard")}
+                  className="w-full justify-center text-sm py-3.5 shadow-xs cursor-pointer"
+                >
+                  Continue to Dashboard
+                </Button>
+              )}
             </div>
           ) : (
             /* Unauthenticated Action Buttons */

@@ -3,7 +3,15 @@
 import React from "react";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "azure-light" | "azure-soft" | "emerald" | "dark" | "secondary" | "outline" | "ghost";
+  variant?:
+    | "primary"
+    | "azure-light"
+    | "azure-soft"
+    | "emerald"
+    | "dark"
+    | "secondary"
+    | "outline"
+    | "ghost";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -24,7 +32,8 @@ const variantStyles = {
     "bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 text-neutral-800 font-medium border border-neutral-200/60",
   outline:
     "bg-white hover:bg-neutral-50 active:bg-neutral-100 text-neutral-800 font-medium border border-neutral-200 shadow-2xs",
-  ghost: "bg-transparent hover:bg-neutral-100 active:bg-neutral-200 text-neutral-700 font-medium",
+  ghost:
+    "bg-transparent hover:bg-neutral-100 active:bg-neutral-200 text-neutral-700 font-medium",
 };
 
 const sizeStyles = {
@@ -77,7 +86,9 @@ export const Button: React.FC<ButtonProps> = ({
 
       <span>{children}</span>
 
-      {!isLoading && rightIcon ? <span className="shrink-0">{rightIcon}</span> : null}
+      {!isLoading && rightIcon ? (
+        <span className="shrink-0">{rightIcon}</span>
+      ) : null}
     </button>
   );
 };
