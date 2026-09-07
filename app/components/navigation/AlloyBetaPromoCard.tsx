@@ -118,10 +118,10 @@ export const AlloyBetaPromoCard: React.FC<AlloyBetaPromoCardProps> = ({
         </div>
       </div>
 
-      {/* Docs & Socials Footer Links */}
+      {/* Docs & GitHub Footer Links */}
       <div className="flex items-center justify-center gap-4 text-xs text-neutral-400 font-normal px-2">
         <a
-          href="https://github.com"
+          href="https://docs.base.org"
           target="_blank"
           rel="noreferrer"
           className="hover:text-neutral-700 transition-colors"
@@ -130,12 +130,12 @@ export const AlloyBetaPromoCard: React.FC<AlloyBetaPromoCardProps> = ({
         </a>
         <span>•</span>
         <a
-          href="https://x.com"
+          href="https://github.com/Nebulaz7/alloy"
           target="_blank"
           rel="noreferrer"
           className="hover:text-neutral-700 transition-colors"
         >
-          X (Twitter)
+          GitHub
         </a>
       </div>
     </div>

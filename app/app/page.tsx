@@ -27,6 +27,7 @@ import {
   Info,
   ChevronRight,
   ArrowDown,
+  QrCode,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { NavTabId } from "@/components/navigation/Sidebar";
@@ -37,6 +38,10 @@ import { NametagClaimFlow } from "@/components/profile/NametagClaimFlow";
 import { EmojiColorPickerModal } from "@/components/profile/EmojiColorPickerModal";
 import { TxDetailModal } from "@/components/modals/TxDetailModal";
 import { LogoutModal } from "@/components/modals/LogoutModal";
+import { CurrencyPickerModal } from "@/components/modals/CurrencyPickerModal";
+import { ConnectedWalletsModal } from "@/components/modals/ConnectedWalletsModal";
+import { QRCodeModal } from "@/components/modals/QRCodeModal";
+import { DividendSimModal } from "@/components/modals/DividendSimModal";
 import { StockLogo } from "@/components/brand/StockLogos";
 import { SignatureHeroCard } from "@/components/ui/SignatureHeroCard";
 import { PersonalLinkCard } from "@/components/ui/PersonalLinkCard";
@@ -151,6 +156,19 @@ export default function Home() {
   // Element 6: Activity Detail Modal & Filter state
   const [selectedActivity, setSelectedActivity] = useState<ActivityItem | null>(null);
 
+  // Element 7: Modals & Dialogs state
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [showConnectedWalletsModal, setShowConnectedWalletsModal] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [showSimModal, setShowSimModal] = useState(false);
+
+  // Dividend & Simulation state for real-time reactivity
+  const [aaplMultiplier, setAaplMultiplier] = useState(1.025);
+  const [aaplSurplus, setAaplSurplus] = useState(75.0);
+  const [totalDividends, setTotalDividends] = useState(1428.5);
+  const [availableHarvest, setAvailableHarvest] = useState(124.5);
+
   // Settings & Logout state
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
@@ -237,6 +255,53 @@ export default function Home() {
     }, 1200);
   };
 
+  // Currency symbols map & dynamic stock token items
+  const CURRENCY_SYMBOLS: Record<string, string> = {
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+    NGN: "₦",
+    IDR: "Rp",
+    JPY: "¥",
+    SGD: "S$",
+    MYR: "RM",
+    AUD: "A$",
+    CAD: "C$",
+    CHF: "CHF",
+    BRL: "R$",
+  };
+  const currSymbol = CURRENCY_SYMBOLS[selectedCurrency] || "$";
+
+  const heroStockItems = [
+    {
+      symbol: "AAPLc",
+      name: "Apple Tokenized Stock",
+      shares: "100.0 AAPLc",
+      valueUsd: "$20,000.00 principal",
+      multiplier: `${aaplMultiplier.toFixed(3)}x`,
+      dividendYield: `+${((aaplMultiplier - 1) * 100).toFixed(1)}% yield`,
+      harvestableSurplus: `+${currSymbol}${aaplSurplus.toFixed(2)}`,
+    },
+    {
+      symbol: "NVDAc",
+      name: "Nvidia Tokenized Stock",
+      shares: "200.0 NVDAc",
+      valueUsd: "$26,000.00 principal",
+      multiplier: "1.018x",
+      dividendYield: "+1.8% yield",
+      harvestableSurplus: `+${currSymbol}45.00`,
+    },
+    {
+      symbol: "COINc",
+      name: "Coinbase Tokenized Stock",
+      shares: "100.0 COINc",
+      valueUsd: "$22,000.00 principal",
+      multiplier: "1.006x",
+      dividendYield: "+0.6% yield",
+      harvestableSurplus: `+${currSymbol}4.50`,
+    },
+  ];
+
   // Render content based on active navigation tab
   const renderTabContent = () => {
     switch (currentTab) {
@@ -259,53 +324,79 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Controls */}
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  onClick={() => setShowAvatarPickerModal(true)}
-                  className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#007FFF] hover:bg-[#0066FF] text-white shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
-                >
-                  <Palette className="w-3.5 h-3.5" />
-                  <span>Customize Avatar</span>
-                </button>
+              {/* Quick Action Pills Row */}
+              <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowAvatarPickerModal(true)}
+                    className="px-3 py-1.5 rounded-xl text-xs font-normal bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Palette className="w-3.5 h-3.5 text-neutral-500" />
+                    <span>Customize Avatar</span>
+                  </button>
 
-                <button
-                  onClick={() => setIsSettingUpIdentity(true)}
-                  className="px-3 py-1.5 rounded-xl text-xs font-normal bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer flex items-center gap-1.5"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-neutral-500" />
-                  <span>Basename Setup</span>
-                </button>
+                  <button
+                    onClick={() => setIsSettingUpIdentity(true)}
+                    className="px-3 py-1.5 rounded-xl text-xs font-normal bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-neutral-500" />
+                    <span>Basename Setup</span>
+                  </button>
 
-                <button
-                  onClick={() => setShowBetaLogo(!showBetaLogo)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-normal border transition-colors cursor-pointer ${
-                    showBetaLogo
-                      ? "bg-[#E0F2FE] text-[#007FFF] border-[#BAE6FD]"
-                      : "bg-neutral-100 text-neutral-600 border-neutral-200 hover:bg-neutral-200"
-                  }`}
-                >
-                  Logo Beta: {showBetaLogo ? "Shown" : "Hidden"}
-                </button>
+                  <button
+                    onClick={() => setShowSimModal(true)}
+                    className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#E0F2FE] hover:bg-[#BAE6FD] text-[#007FFF] border border-[#BAE6FD] transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-[#007FFF]" />
+                    <span>Simulate Dividend</span>
+                  </button>
 
-                <button
-                  onClick={() =>
-                    setPreviewMode(previewMode === "responsive" ? "mobile" : "responsive")
-                  }
-                  className="px-3 py-1.5 rounded-xl text-xs font-normal bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors flex items-center gap-1.5 cursor-pointer"
-                >
-                  {previewMode === "responsive" ? (
-                    <>
-                      <Smartphone className="w-3.5 h-3.5 text-neutral-500" />
-                      <span>Mobile Frame</span>
-                    </>
-                  ) : (
-                    <>
-                      <Monitor className="w-3.5 h-3.5 text-neutral-500" />
-                      <span>Full Responsive</span>
-                    </>
-                  )}
-                </button>
+                  <button
+                    onClick={() => setShowQrModal(true)}
+                    className="px-3 py-1.5 rounded-xl text-xs font-normal bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <QrCode className="w-3.5 h-3.5 text-neutral-500" />
+                    <span>Share QR</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowConnectedWalletsModal(true)}
+                    className="px-3 py-1.5 rounded-xl text-xs font-normal bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Wallet className="w-3.5 h-3.5 text-neutral-500" />
+                    <span>Wallets</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowBetaLogo(!showBetaLogo)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-normal border transition-colors cursor-pointer ${
+                      showBetaLogo
+                        ? "bg-[#E0F2FE] text-[#007FFF] border-[#BAE6FD]"
+                        : "bg-neutral-100 text-neutral-600 border-neutral-200 hover:bg-neutral-200"
+                    }`}
+                  >
+                    Logo Beta: {showBetaLogo ? "Shown" : "Hidden"}
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      setPreviewMode(previewMode === "responsive" ? "mobile" : "responsive")
+                    }
+                    className="px-3 py-1.5 rounded-xl text-xs font-normal bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {previewMode === "responsive" ? (
+                      <>
+                        <Smartphone className="w-3.5 h-3.5 text-neutral-500" />
+                        <span>Mobile Frame</span>
+                      </>
+                    ) : (
+                      <>
+                        <Monitor className="w-3.5 h-3.5 text-neutral-500" />
+                        <span>Full Responsive</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -323,8 +414,9 @@ export default function Home() {
 
               <SignatureHeroCard
                 title="Total Dividends Earned"
-                totalDividendsEarned="+$1,428.50"
-                availableToHarvest="+$124.50"
+                totalDividendsEarned={`+${currSymbol}${totalDividends.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                availableToHarvest={`+${currSymbol}${availableHarvest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                items={heroStockItems}
                 bannerText="Dividends harvested privately through Alloy"
                 onHarvestClick={(token) => {
                   setSelectedStock(token.symbol as any);
@@ -354,7 +446,7 @@ export default function Home() {
                 handle={`${username}.base.eth`}
                 avatarEmoji={avatarEmoji}
                 avatarBg={avatarBg}
-                onShowQr={() => alert("QR modal will open in Element 7!")}
+                onShowQr={() => setShowQrModal(true)}
                 onOpenLink={() =>
                   window.open(
                     "https://sepolia.basescan.org/address/0xD5687794c8E1b69F477911Df56170679CB6414eC",
@@ -425,16 +517,27 @@ export default function Home() {
           <div className="space-y-6">
             {/* Header description */}
             <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 shadow-xs space-y-2">
-              <div className="flex items-center gap-2 text-xs font-heading font-medium text-[#007FFF] uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Private 1-Click Dividend Rail</span>
+              <div className="flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E0F2FE] text-[#007FFF] text-xs font-normal">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Private 1-Click Dividend Rail</span>
+                  </div>
+                  <h2 className="font-heading font-medium text-2xl text-neutral-900">
+                    Harvest Studio
+                  </h2>
+                  <p className="text-sm text-neutral-500 font-normal">
+                    Extract your accrued stock dividends without selling or touching your equity principal. Funds are routed directly or to private stealth addresses.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowSimModal(true)}
+                  className="px-3.5 py-2 rounded-2xl bg-[#E0F2FE] hover:bg-[#BAE6FD] text-[#007FFF] border border-[#BAE6FD] text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#007FFF]" />
+                  <span>Simulate Payout</span>
+                </button>
               </div>
-              <h2 className="font-heading font-medium text-2xl text-neutral-900">
-                Harvest Studio
-              </h2>
-              <p className="text-sm text-neutral-500 font-normal">
-                Extract your accrued stock dividends without selling or touching your equity principal. Funds are routed directly or to private stealth addresses.
-              </p>
             </div>
 
             {/* Step 1: Choose Equity Asset */}
@@ -450,9 +553,9 @@ export default function Home() {
 
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { sym: "AAPLc" as const, name: "Apple", surplus: "+$75.00", mult: "1.025x" },
-                  { sym: "NVDAc" as const, name: "Nvidia", surplus: "+$45.00", mult: "1.018x" },
-                  { sym: "COINc" as const, name: "Coinbase", surplus: "+$4.50", mult: "1.006x" },
+                  { sym: "AAPLc" as const, name: "Apple", surplus: `+${currSymbol}${aaplSurplus.toFixed(2)}`, mult: `${aaplMultiplier.toFixed(3)}x` },
+                  { sym: "NVDAc" as const, name: "Nvidia", surplus: `+${currSymbol}45.00`, mult: "1.018x" },
+                  { sym: "COINc" as const, name: "Coinbase", surplus: `+${currSymbol}4.50`, mult: "1.006x" },
                 ].map((item) => {
                   const isSelected = selectedStock === item.sym;
                   return (
@@ -810,7 +913,7 @@ export default function Home() {
               <div className="bg-white rounded-3xl border border-neutral-200/80 p-2 shadow-xs">
                 <button
                   type="button"
-                  onClick={() => alert("Currency picker will open in Element 7!")}
+                  onClick={() => setShowCurrencyModal(true)}
                   className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-neutral-50/90 transition-colors cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-3.5">
@@ -830,7 +933,7 @@ export default function Home() {
 
                   <div className="flex items-center gap-2 text-neutral-400">
                     <span className="font-medium text-xs text-neutral-700 bg-neutral-100 px-2.5 py-1 rounded-lg">
-                      USD
+                      {selectedCurrency}
                     </span>
                     <MoreVertical className="w-4 h-4" />
                   </div>
@@ -849,7 +952,7 @@ export default function Home() {
                 {/* Connected Wallets Row */}
                 <button
                   type="button"
-                  onClick={() => alert("Connected wallets modal will open in Element 7!")}
+                  onClick={() => setShowConnectedWalletsModal(true)}
                   className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-neutral-50/90 transition-colors cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-3.5">
@@ -916,13 +1019,13 @@ export default function Home() {
                 </a>
 
                 <a
-                  href="https://x.com/base"
+                  href="https://github.com/Nebulaz7/alloy"
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-neutral-50/90 transition-colors cursor-pointer text-left group"
                 >
                   <span className="font-heading font-medium text-neutral-900 text-sm">
-                    X (Twitter)
+                    GitHub
                   </span>
                   <ExternalLink className="w-4 h-4 text-neutral-400 group-hover:text-neutral-700 transition-colors" />
                 </a>
@@ -1090,6 +1193,44 @@ export default function Home() {
           onClose={() => setShowLogoutModal(false)}
           onConfirmLogout={handleConfirmLogout}
         />
+
+        {/* Element 7: Currency Picker Modal in Mobile Preview */}
+        <CurrencyPickerModal
+          isOpen={showCurrencyModal}
+          selectedCurrency={selectedCurrency}
+          onSelectCurrency={(cur) => {
+            setSelectedCurrency(cur.code);
+            setShowCurrencyModal(false);
+          }}
+          onClose={() => setShowCurrencyModal(false)}
+        />
+
+        {/* Element 7: Connected Wallets Modal in Mobile Preview */}
+        <ConnectedWalletsModal
+          isOpen={showConnectedWalletsModal}
+          onClose={() => setShowConnectedWalletsModal(false)}
+          primaryAddress="0xD5687794c8E1b69F477911Df56170679CB6414eC"
+        />
+
+        {/* Element 7: QR Code Share Modal in Mobile Preview */}
+        <QRCodeModal
+          isOpen={showQrModal}
+          onClose={() => setShowQrModal(false)}
+          handle={`${username}.base.eth`}
+        />
+
+        {/* Element 7: Corporate Dividend Simulator Modal in Mobile Preview */}
+        <DividendSimModal
+          isOpen={showSimModal}
+          onClose={() => setShowSimModal(false)}
+          currentMultiplier={aaplMultiplier}
+          onDividendSimulated={(newMult, surplus) => {
+            setAaplMultiplier(newMult);
+            setAaplSurplus((prev) => +(prev + surplus).toFixed(2));
+            setAvailableHarvest((prev) => +(prev + surplus).toFixed(2));
+            setTotalDividends((prev) => +(prev + surplus).toFixed(2));
+          }}
+        />
       </div>
     );
   }
@@ -1136,6 +1277,44 @@ export default function Home() {
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirmLogout={handleConfirmLogout}
+      />
+
+      {/* Element 7: Currency Picker Modal in Responsive Layout */}
+      <CurrencyPickerModal
+        isOpen={showCurrencyModal}
+        selectedCurrency={selectedCurrency}
+        onSelectCurrency={(cur) => {
+          setSelectedCurrency(cur.code);
+          setShowCurrencyModal(false);
+        }}
+        onClose={() => setShowCurrencyModal(false)}
+      />
+
+      {/* Element 7: Connected Wallets Modal in Responsive Layout */}
+      <ConnectedWalletsModal
+        isOpen={showConnectedWalletsModal}
+        onClose={() => setShowConnectedWalletsModal(false)}
+        primaryAddress="0xD5687794c8E1b69F477911Df56170679CB6414eC"
+      />
+
+      {/* Element 7: QR Code Share Modal in Responsive Layout */}
+      <QRCodeModal
+        isOpen={showQrModal}
+        onClose={() => setShowQrModal(false)}
+        handle={`${username}.base.eth`}
+      />
+
+      {/* Element 7: Corporate Dividend Simulator Modal in Responsive Layout */}
+      <DividendSimModal
+        isOpen={showSimModal}
+        onClose={() => setShowSimModal(false)}
+        currentMultiplier={aaplMultiplier}
+        onDividendSimulated={(newMult, surplus) => {
+          setAaplMultiplier(newMult);
+          setAaplSurplus((prev) => +(prev + surplus).toFixed(2));
+          setAvailableHarvest((prev) => +(prev + surplus).toFixed(2));
+          setTotalDividends((prev) => +(prev + surplus).toFixed(2));
+        }}
       />
     </>
   );

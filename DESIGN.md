@@ -76,7 +76,7 @@ A clean, focused split-layout:
     - 📋 **Activities**: Filterable transaction ledger (Harvests, Swaps, Stealth).
     - 🧪 **Simulator & Faucet**: Live multiplier jumper (+`$2.50`/share) & test mints.
     - ⚙️ **Settings**: Profile editor, connected wallets, stealth meta-address keys.
-  - **Footer Card**: Playful promo illustration container (*"Alloy is currently in beta on Base Sepolia"*), with links to Docs and Twitter/X.
+  - **Footer Card**: Playful promo illustration container (*"Alloy is currently in beta on Base Sepolia"*), with links to Docs and GitHub.
 - **Main Viewport**:
   - Centered clean single-column layout (max width `680px` to `768px`) to maintain focus and prevent visual clutter.
   - Top header displaying page title (`Dashboard`, `Activities`, etc.).
@@ -207,8 +207,9 @@ All modals use centered rounded cards (`rounded-3xl`), pure white backgrounds, s
    - Functional `Export CSV` downloader.
    - Interactive transaction detail receipt modal ([`TxDetailModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/modals/TxDetailModal.tsx)) with BaseScan link and ERC-5564 stealth verification.
 
-7. **Element 7: Modals & Dialogs** [Next]
-   - Currency Picker modal with search bar, country pills, and green checkmark.
-   - Connected Wallets modal with address copy, `Export ->` pill, and privacy explainer.
-   - QR Code share modal with clean framed SVG QR code and handle pill.
-   - Interactive Dividend Simulator modal (+`$2.50`/share test trigger).
+7. **Element 7: Modals & Dialogs** [Completed]
+   - **Currency Picker Modal** ([`CurrencyPickerModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/modals/CurrencyPickerModal.tsx)): Search bar, country code flags/pills (USD, EUR, GBP, NGN, etc.), real-time filtering, active green checkmark, and live currency symbol reactivity across all dashboard cards.
+   - **Connected Wallets Modal** ([`ConnectedWalletsModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/modals/ConnectedWalletsModal.tsx)): Wallet cards for Base Sepolia, Coinbase Smart Wallet, and ERC-5564 Stealth Meta-Address, with address copy, `Export |->` private key extraction modal with toggleable eye visibility, and exact privacy security explainer.
+   - **QR Code Share Modal** ([`QRCodeModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/modals/QRCodeModal.tsx)): High-contrast framed QR code with centered winking mascot badge, copy payment link button, and native Web Share API integration.
+   - **Corporate Dividend Simulator Modal** ([`DividendSimModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/modals/DividendSimModal.tsx)): Interactive corporate dividend simulation (+`$2.50`/share test trigger, multiplier jump calculation, harvestable surplus generator) with instant live update across hero card and Harvest studio.
+   - **Logout Confirmation Modal** ([`LogoutModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/modals/LogoutModal.tsx)): Coral red alert modal confirming session disconnect.
