@@ -25,7 +25,8 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-body), "Comic Relief", "Comic Sans MS", cursive, sans-serif;
+  font-family:
+    var(--font-body), "Comic Relief", "Comic Sans MS", cursive, sans-serif;
   font-weight: 400;
 }
 
@@ -36,5 +37,10 @@ h4,
 h5,
 h6,
 .font-heading {
-  font-family: var(--font-heading), "Google Sans", system-ui, -apple-system, sans-serif;
+  font-family:
+    var(--font-heading),
+    "Google Sans",
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
