@@ -16,9 +16,11 @@ import {
   Coins,
   Send,
   Zap,
+  TrendingUp,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { NavTabId } from "@/components/navigation/Sidebar";
+import { DividendAnalyticsChart } from "@/components/analytics/DividendAnalyticsChart";
 import { StockLogo } from "@/components/brand/StockLogos";
 import { SignatureHeroCard } from "@/components/ui/SignatureHeroCard";
 import { PersonalLinkCard } from "@/components/ui/PersonalLinkCard";
@@ -159,11 +161,11 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 1. Signature Balance Hero Card */}
+            {/* 1. Signature Hero Card: Primary Focus on Dividends Earned */}
             <div className="space-y-2">
               <div className="flex items-center justify-between px-1">
                 <span className="text-xs font-heading font-medium uppercase tracking-wider text-neutral-400">
-                  Equity Holdings & Harvestable Dividends
+                  Dividends Earned & Available Yield
                 </span>
                 <span className="text-xs text-[#007FFF] font-normal flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-[#4DA6FF] animate-pulse" />
@@ -172,8 +174,9 @@ export default function Home() {
               </div>
 
               <SignatureHeroCard
-                title="Your Equity Holdings"
-                totalBalance="$68,000.00"
+                title="Total Dividends Earned"
+                totalDividendsEarned="+$1,428.50"
+                availableToHarvest="+$124.50"
                 bannerText="Dividends harvested privately through Alloy"
                 onHarvestClick={(token) => {
                   setSelectedStock(token.symbol as any);
@@ -233,14 +236,23 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 flex items-center gap-2">
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="w-full"
+                  className="flex-1 justify-center"
                   onClick={() => setCurrentTab("activities")}
                 >
                   See all activities
+                </Button>
+                <Button
+                  variant="azure-soft"
+                  size="sm"
+                  className="flex items-center justify-center gap-1.5 text-xs text-[#007FFF]"
+                  onClick={() => setCurrentTab("activities")}
+                >
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  <span>View Dividend Graph</span>
                 </Button>
               </div>
             </div>
@@ -404,6 +416,13 @@ export default function Home() {
       case "activities":
         return (
           <div className="space-y-6">
+            {/* 1. Interactive Dividend Analytics Chart */}
+            <DividendAnalyticsChart
+              title="Dividend Earnings Over Time"
+              initialRange="1M"
+            />
+
+            {/* 2. Activities Ledger Card */}
             <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between">
                 <div>

@@ -108,20 +108,21 @@ A clean, focused split-layout:
   - Emoji & background color picker (10 pastel color swatches + 3D emoji grid + *"Surprise me!"* dice button).
 
 ### 5.2 Dashboard (`/dashboard`)
-1. **Signature Balance Card (Hero)**:
+1. **Signature Dividend Yield Card (Hero)**:
    - Thick Azure Blue border (`border-4 border-[#007FFF]`) with solid bottom footer banner:
      *"Dividends harvested privately through Alloy"*.
-   - Total equity balance and accrued dividend yield (`+$124.50`).
-   - Token list:
-     - Apple (`AAPLc`), Nvidia (`NVDAc`), Coinbase (`COINc`) with official vector logos and live multiplier indicators (e.g. `1.025x`).
-     - Alert pill: *"Corporate dividend detected! Multiplier increased from 1.00x to 1.025x. Tap to harvest."*
+   - **Primary Focus: Total Dividends Earned** (`+$1,428.50` with `+$124.50 ready to harvest`).
+   - Secondary reassurance badge: *"100% untouched stock principal ($68,000.00)"*.
+   - Token list focused on dividend yield:
+     - Apple (`AAPLc`), Nvidia (`NVDAc`), Coinbase (`COINc`) highlighting **harvestable surplus yield** (`+$75.00 from AAPLc`, `1.025x multiplier`, `+2.5% yield`).
+     - Alert pill: *"Corporate dividend credited! Multiplier jumped to 1.025x. Tap to harvest your $75.00 Apple surplus now without selling shares."*
 2. **Personal Link / Basename Card**:
    - User's public Basename / stealth handle (e.g., `alloy.cash/nebula` or `bob.base.eth`).
    - Action buttons: Copy link, Show QR Code modal, Open link.
 3. **Quick Activity Preview**:
    - Filter pills: `All`, `Incoming`, `Outgoing`, `Gifts`.
    - Recent transaction items with green incoming arrows, token amounts, and memo tags.
-   - *"See all activities"* soft rounded button.
+   - Quick action buttons: *"See all activities"* and *"View Dividend Graph"*.
 
 ### 5.3 Harvest Studio / Payout Rail (`/harvest` or Modal)
 - **Step 1: Choose Equity Asset**: Select which stock to harvest from (`AAPLc`, `NVDAc`, `COINc`). Shows calculated surplus shares $\Delta B$ without touching principal.
@@ -134,10 +135,16 @@ A clean, focused split-layout:
   - Custom Stealth Address.
 - **1-Click Atomic Execution**: Trims surplus $\rightarrow$ Swaps on AMM $\rightarrow$ Sends to recipient $\rightarrow$ Emits ERC-5564 announcement.
 
-### 5.4 Activities Ledger (`/activities`)
-- Filter pills: `All`, `Incoming`, `Outgoing`, `Gifts`, plus an `Export CSV` button pill.
-- Date grouped lists (`TODAY`, `YESTERDAY`, etc.).
-- Activity rows with circular avatar, directional indicator, token quantity in bold, and metadata tags (e.g., `personal`, `stealth payout`, BaseScan link).
+### 5.4 Activities Ledger & Analytics (`/activities`)
+1. **Interactive Dividend Analytics Chart**:
+   - Upward trending emerald green line (`#10B981`) with soft translucent green fill and dotted pattern.
+   - Interactive crosshair scrubber showing exact date, dividend event (e.g. *"Apple Dividend Multiplier Jump"*), and cumulative earnings (`+$1,428.50`).
+   - Timeframe selector pills: `1D`, `1W`, `1M`, `1Y`, `ALL`.
+   - Asset breakdown filter pills: `All Dividends`, `AAPLc`, `NVDAc`, `COINc`.
+2. **Transaction Ledger**:
+   - Filter pills: `All`, `Incoming`, `Outgoing`, `Gifts`, plus an `Export CSV` button pill.
+   - Date grouped lists (`TODAY`, `YESTERDAY`, etc.).
+   - Activity rows with circular avatar, directional indicator, token quantity in bold, and metadata tags (e.g., `personal`, `stealth payout`, BaseScan link).
 
 ### 5.5 Settings (`/settings`)
 - **Profile Card**: Avatar with edit button pill, username, email/address.

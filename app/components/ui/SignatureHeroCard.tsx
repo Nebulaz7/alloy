@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Info, Scan, ArrowUpRight, X, Sparkles } from "lucide-react";
+import { Info, Scan, ArrowUpRight, X, Sparkles, TrendingUp, ShieldCheck } from "lucide-react";
 import { StockLogo } from "@/components/brand/StockLogos";
 
 export interface StockTokenItem {
@@ -10,12 +10,14 @@ export interface StockTokenItem {
   shares: string;
   valueUsd: string;
   multiplier: string;
-  pendingYield?: string;
+  dividendYield: string;
+  harvestableSurplus: string;
 }
 
 interface SignatureHeroCardProps {
   title?: string;
-  totalBalance?: string;
+  totalDividendsEarned?: string;
+  availableToHarvest?: string;
   items?: StockTokenItem[];
   bannerText?: string;
   onHarvestClick?: (token: StockTokenItem) => void;
@@ -26,30 +28,36 @@ const defaultItems: StockTokenItem[] = [
   {
     symbol: "AAPLc",
     name: "Apple Tokenized Stock",
-    shares: "100.0",
-    valueUsd: "$20,000.00",
+    shares: "100.0 AAPLc",
+    valueUsd: "$20,000.00 principal",
     multiplier: "1.025x",
-    pendingYield: "+$250.00",
+    dividendYield: "+2.5% yield",
+    harvestableSurplus: "+$75.00",
   },
   {
     symbol: "NVDAc",
     name: "Nvidia Tokenized Stock",
-    shares: "200.0",
-    valueUsd: "$26,000.00",
-    multiplier: "1.000x",
+    shares: "200.0 NVDAc",
+    valueUsd: "$26,000.00 principal",
+    multiplier: "1.018x",
+    dividendYield: "+1.8% yield",
+    harvestableSurplus: "+$45.00",
   },
   {
     symbol: "COINc",
     name: "Coinbase Tokenized Stock",
-    shares: "100.0",
-    valueUsd: "$22,000.00",
-    multiplier: "1.000x",
+    shares: "100.0 COINc",
+    valueUsd: "$22,000.00 principal",
+    multiplier: "1.006x",
+    dividendYield: "+0.6% yield",
+    harvestableSurplus: "+$4.50",
   },
 ];
 
 export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
-  title = "Your Equity Holdings",
-  totalBalance = "$68,000.00",
+  title = "Total Dividends Earned",
+  totalDividendsEarned = "+$1,428.50",
+  availableToHarvest = "+$124.50",
   items = defaultItems,
   bannerText = "Dividends harvested privately through Alloy",
   onHarvestClick,
@@ -69,7 +77,7 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
             <span>{title}</span>
             <span
               className="text-neutral-400 hover:text-neutral-600 cursor-help transition-colors"
-              title="Tokenized stocks accrue cash dividends onchain via increasing mathematical multipliers."
+              title="Cash dividends accrue automatically via Base Sepolia mathematical multipliers without selling stock principal."
             >
               <Info className="w-4 h-4" />
             </span>
@@ -84,114 +92,106 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
           </button>
         </div>
 
-        {/* Big Balance Display (Google Sans, not overly bold) */}
-        <div className="space-y-0.5">
-          <div className="text-4xl sm:text-5xl font-heading font-semibold text-neutral-900 tracking-tight">
-            {totalBalance}
+        {/* Big Dividend Figure Display */}
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-baseline gap-3">
+            <span className="text-4xl sm:text-5xl font-heading font-medium text-neutral-900 tracking-tight">
+              {totalDividendsEarned}
+            </span>
+            <span className="text-xs sm:text-sm font-medium text-[#10B981] px-2.5 py-1 rounded-xl bg-[#DCFCE7] flex items-center gap-1">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>{availableToHarvest} ready to harvest</span>
+            </span>
           </div>
-          <div className="text-xs text-neutral-400 font-normal">
-            Principal equity value (100% conserved on Base)
+
+          {/* Underlying Equity Protected Assurance */}
+          <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-normal">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
+            <span>$68,000.00 stock principal 100% untouched & conserved</span>
           </div>
         </div>
 
-        {/* Section Label */}
-        <div className="text-[11px] font-heading font-medium uppercase tracking-wider text-neutral-400 pt-1">
-          Tokenized Stocks & Multipliers
+        {/* Section Label: Accruing Dividend Yields */}
+        <div className="flex items-center justify-between text-[11px] font-heading font-medium uppercase tracking-wider text-neutral-400 pt-1">
+          <span>Accruing Stock Dividends</span>
+          <span>Surplus Yield</span>
         </div>
 
-        {/* Token List with Real Logos */}
+        {/* Token List: Focused on Dividend Yield & Surplus */}
         <div className="space-y-2.5">
           {items.map((token) => (
             <div
               key={token.symbol}
-              className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-neutral-50/80 transition-colors duration-150"
+              className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-neutral-50/80 transition-colors duration-150 group"
             >
               <div className="flex items-center gap-3">
-                {/* Official SVG Logo */}
+                {/* Official SVG Stock Logo */}
                 <StockLogo symbol={token.symbol} size={40} />
 
-                {/* Token Symbol and Title */}
+                {/* Token and Dividend Info */}
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-neutral-900 text-sm sm:text-base font-medium">
-                      {token.shares}
+                      {token.harvestableSurplus}
                     </span>
                     <span className="text-neutral-400 text-xs sm:text-sm font-normal">
-                      {token.symbol}
+                      from {token.symbol}
                     </span>
-                    {token.multiplier && (
-                      <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-[#E0F2FE] text-[#007FFF] border border-[#BAE6FD]">
-                        {token.multiplier}
-                      </span>
-                    )}
+                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-[#E0F2FE] text-[#007FFF] border border-[#BAE6FD]">
+                      {token.multiplier}
+                    </span>
                   </div>
-                  <div className="text-xs text-neutral-500 font-normal">
-                    {token.name}
+                  <div className="text-xs text-neutral-400 font-normal">
+                    {token.shares} • {token.valueUsd}
                   </div>
                 </div>
               </div>
 
-              {/* Price & Action */}
-              <div className="flex items-center gap-2.5">
-                <div className="text-right">
-                  <div className="text-neutral-800 text-sm sm:text-base font-normal">
-                    {token.valueUsd}
-                  </div>
-                  {token.pendingYield ? (
-                    <div className="text-xs text-emerald-600 font-medium flex items-center justify-end gap-0.5">
-                      <span>{token.pendingYield}</span>
-                    </div>
-                  ) : null}
-                </div>
-
-                {/* Harvest / Action Button */}
+              {/* Action / Harvest Button */}
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => onHarvestClick?.(token)}
-                  aria-label={`Harvest ${token.symbol}`}
-                  className="w-8 h-8 rounded-xl bg-[#F0F7FF] hover:bg-[#007FFF] text-[#007FFF] hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-2xs"
-                  title="Harvest Dividend Surplus"
+                  className="px-3 py-1.5 rounded-xl bg-[#E0F2FE] hover:bg-[#007FFF] text-[#007FFF] hover:text-white text-xs font-normal transition-all duration-150 flex items-center gap-1 cursor-pointer"
                 >
-                  <ArrowUpRight className="w-4 h-4" />
+                  <span>Harvest</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Demo Dividend Alert Banner with Light Azure Accents */}
-        {showDemoBanner ? (
-          <div className="bg-[#F0F8FF] border border-[#BAE6FD] text-neutral-800 rounded-2xl p-3.5 sm:p-4 flex items-start justify-between gap-3 animate-fadeIn">
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-xl bg-[#4DA6FF] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
-                <Sparkles className="w-3.5 h-3.5" />
+        {/* Active Demo Alert Banner */}
+        {showDemoBanner && (
+          <div className="p-3.5 rounded-2xl bg-[#E0F2FE]/70 border border-[#BAE6FD] flex items-start justify-between gap-3 text-xs text-neutral-700">
+            <div className="flex items-start gap-2.5">
+              <div className="w-5 h-5 rounded-lg bg-[#007FFF] text-white flex items-center justify-center shrink-0 mt-0.5">
+                <Sparkles className="w-3 h-3" />
               </div>
-              <div className="text-xs space-y-1">
-                <div className="font-heading font-medium text-neutral-900">
-                  Dividend Surplus Detected
+              <div className="space-y-0.5">
+                <div className="font-medium text-neutral-900">
+                  Apple Corporate Dividend Credited (+1.025x)
                 </div>
-                <div className="text-neutral-600 leading-relaxed font-normal">
-                  We simulated a <span className="font-medium text-[#007FFF]">+$2.50</span> dividend
-                  on AAPLc (+1.25% multiplier). Your principal equity remains intact while
-                  surplus can be privately routed!
+                <div className="text-neutral-600 font-normal">
+                  $75.00 in surplus dividend shares is ready for 1-click private extraction. Your equity principal remains 100% untouched.
                 </div>
               </div>
             </div>
 
             <button
               onClick={() => setShowDemoBanner(false)}
-              className="text-neutral-400 hover:text-neutral-600 cursor-pointer p-1"
-              aria-label="Dismiss banner"
+              className="text-neutral-400 hover:text-neutral-600 p-1 cursor-pointer transition-colors"
+              aria-label="Dismiss alert"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-        ) : null}
+        )}
       </div>
 
-      {/* Signature Solid Bottom Banner Ribbon (Paired with Lighter Azure Strip) */}
-      <div className="bg-[#007FFF] text-white text-xs sm:text-sm py-2.5 px-4 text-center font-heading font-medium tracking-wide select-none flex items-center justify-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#4DA6FF] animate-pulse" />
-        <span>{bannerText}</span>
+      {/* Full-width Solid Azure Blue Bottom Ribbon Banner */}
+      <div className="bg-[#007FFF] py-3.5 px-6 text-center text-white text-xs sm:text-sm font-medium tracking-wide">
+        {bannerText}
       </div>
     </div>
   );
