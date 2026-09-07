@@ -28,76 +28,126 @@ const STOCKS = [
   },
 ];
 
+const PREVIEW_STOCKS: StockTokenItem[] = [
+  {
+    symbol: "AAPLc",
+    name: "Apple Tokenized Stock",
+    shares: "100.0 AAPLc",
+    valueUsd: "$20,000.00 principal",
+    multiplier: "1.025x",
+    dividendYield: "+2.5% yield",
+    harvestableSurplus: "+$75.00",
+  },
+  {
+    symbol: "NVDAc",
+    name: "Nvidia Tokenized Stock",
+    shares: "200.0 NVDAc",
+    valueUsd: "$26,000.00 principal",
+    multiplier: "1.018x",
+    dividendYield: "+1.8% yield",
+    harvestableSurplus: "+$45.00",
+  },
+  {
+    symbol: "COINc",
+    name: "Coinbase Tokenized Stock",
+    shares: "100.0 COINc",
+    valueUsd: "$22,000.00 principal",
+    multiplier: "1.006x",
+    dividendYield: "+0.6% yield",
+    harvestableSurplus: "+$4.50",
+  },
+];
+
 export function useAlloyStocks() {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { profile } = useProfile();
   const sym = profile.currencySymbol || "$";
 
-  // Target query address (connected wallet or fallback demo deployer)
-  const targetAddress = address || "0xeca6Ff5Ce16bf15E38a4F28DE6da2397438f7918";
+  // Check whether the user is in preview mode (unauthenticated)
+  const isPreview = !isConnected || !address;
 
-  // Multicall: read multiplier, balance, and surplus for each stock
-  const { data, isLoading, refetch } = useReadContracts({
-    contracts: [
-      // AAPLc
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_AAPLc,
-        abi: B20_STOCK_ABI,
-        functionName: "multiplier",
-      },
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_AAPLc,
-        abi: B20_STOCK_ABI,
-        functionName: "balanceOf",
-        args: [targetAddress],
-      },
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_AAPLc,
-        abi: B20_STOCK_ABI,
-        functionName: "calculateSurplus",
-        args: [targetAddress],
-      },
-      // NVDAc
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_NVDAc,
-        abi: B20_STOCK_ABI,
-        functionName: "multiplier",
-      },
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_NVDAc,
-        abi: B20_STOCK_ABI,
-        functionName: "balanceOf",
-        args: [targetAddress],
-      },
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_NVDAc,
-        abi: B20_STOCK_ABI,
-        functionName: "calculateSurplus",
-        args: [targetAddress],
-      },
-      // COINc
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_COINc,
-        abi: B20_STOCK_ABI,
-        functionName: "multiplier",
-      },
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_COINc,
-        abi: B20_STOCK_ABI,
-        functionName: "balanceOf",
-        args: [targetAddress],
-      },
-      {
-        address: ALLOY_ADDRESSES.contracts.MockB20_COINc,
-        abi: B20_STOCK_ABI,
-        functionName: "calculateSurplus",
-        args: [targetAddress],
-      },
-    ],
+  // Contracts query for authenticated user's address
+  const contractsQuery = [
+    // AAPLc
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_AAPLc,
+      abi: B20_STOCK_ABI,
+      functionName: "multiplier" as const,
+    },
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_AAPLc,
+      abi: B20_STOCK_ABI,
+      functionName: "balanceOf" as const,
+      args: address ? [address] : undefined,
+    },
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_AAPLc,
+      abi: B20_STOCK_ABI,
+      functionName: "calculateSurplus" as const,
+      args: address ? [address] : undefined,
+    },
+    // NVDAc
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_NVDAc,
+      abi: B20_STOCK_ABI,
+      functionName: "multiplier" as const,
+    },
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_NVDAc,
+      abi: B20_STOCK_ABI,
+      functionName: "balanceOf" as const,
+      args: address ? [address] : undefined,
+    },
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_NVDAc,
+      abi: B20_STOCK_ABI,
+      functionName: "calculateSurplus" as const,
+      args: address ? [address] : undefined,
+    },
+    // COINc
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_COINc,
+      abi: B20_STOCK_ABI,
+      functionName: "multiplier" as const,
+    },
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_COINc,
+      abi: B20_STOCK_ABI,
+      functionName: "balanceOf" as const,
+      args: address ? [address] : undefined,
+    },
+    {
+      address: ALLOY_ADDRESSES.contracts.MockB20_COINc,
+      abi: B20_STOCK_ABI,
+      functionName: "calculateSurplus" as const,
+      args: address ? [address] : undefined,
+    },
+  ];
+
+  const { data, isLoading: queryLoading, isFetching, refetch } = useReadContracts({
+    contracts: contractsQuery,
     query: {
+      enabled: !isPreview,
       refetchInterval: 5000,
     },
   });
+
+  // Preserve mock data strictly for unauthenticated preview mode
+  if (isPreview) {
+    return {
+      stocks: PREVIEW_STOCKS,
+      totalDividendsEarned: `+${sym}1,428.50`,
+      availableToHarvest: `+${sym}124.50`,
+      totalPortfolioValue: `${sym}68,000.00`,
+      rawPortfolioValue: 68000,
+      isLoading: false,
+      refetch: async () => {},
+      isPreview: true,
+    };
+  }
+
+  // Loading state when contract calls are in-flight
+  const isLoading = queryLoading || (!data && isFetching);
 
   let totalAvailableUsd = 0;
   let totalPortfolioUsd = 0;
@@ -107,21 +157,21 @@ export function useAlloyStocks() {
     const balRaw = data?.[i * 3 + 1]?.result as bigint | undefined;
     const surpRaw = data?.[i * 3 + 2]?.result as bigint | undefined;
 
-    // Multiplier (18 decimals: 1e18 = 1.000x)
+    // Multiplier from contract (18 decimals: 1e18 = 1.000x)
     const multiplierFloat = multRaw ? Number(formatUnits(multRaw, 18)) : 1.0;
     const multiplierStr = `${multiplierFloat.toFixed(3)}x`;
 
-    // Shares held
-    const sharesFloat = balRaw ? Number(formatUnits(balRaw, 18)) : (i === 0 ? 100 : i === 1 ? 200 : 100);
+    // Real live balance from live contract (0 if user has no tokens)
+    const sharesFloat = balRaw ? Number(formatUnits(balRaw, 18)) : 0;
     const principalValueUsd = sharesFloat * stock.spotPriceUsd;
     totalPortfolioUsd += principalValueUsd;
 
-    // Yield %
-    const yieldPct = ((multiplierFloat - 1.0) * 100);
+    // Yield % based on contract multiplier
+    const yieldPct = Math.max(0, (multiplierFloat - 1.0) * 100);
     const yieldStr = yieldPct > 0 ? `+${yieldPct.toFixed(1)}% yield` : "0.0% yield";
 
-    // Surplus shares & harvestable USD
-    const surplusSharesFloat = surpRaw ? Number(formatUnits(surpRaw, 18)) : (sharesFloat * (multiplierFloat - 1.0) / multiplierFloat);
+    // Real accrued surplus from live contract (0 if user has no surplus)
+    const surplusSharesFloat = surpRaw ? Number(formatUnits(surpRaw, 18)) : 0;
     const harvestableUsd = Math.max(0, surplusSharesFloat * stock.spotPriceUsd);
     totalAvailableUsd += harvestableUsd;
 
@@ -136,15 +186,17 @@ export function useAlloyStocks() {
     };
   });
 
-  // Cumulative all-time dividends calculation
-  const totalEarnedUsd = totalAvailableUsd + 1304.0;
+  // Cumulative dividends for live smart contract (actual real harvestable surplus)
+  const totalEarnedUsd = totalAvailableUsd;
 
   return {
     stocks: stockItems,
     totalDividendsEarned: `+${sym}${totalEarnedUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     availableToHarvest: `+${sym}${totalAvailableUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     totalPortfolioValue: `${sym}${totalPortfolioUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    rawPortfolioValue: totalPortfolioUsd,
     isLoading,
     refetch,
+    isPreview: false,
   };
 }

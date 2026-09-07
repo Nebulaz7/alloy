@@ -27,6 +27,7 @@ import { TxDetailModal } from "@/components/modals/TxDetailModal";
 import { DividendSimModal } from "@/components/modals/DividendSimModal";
 import { EmojiColorPickerModal } from "@/components/profile/EmojiColorPickerModal";
 import { useAlloyStocks } from "@/lib/hooks/useAlloyStocks";
+import { useTokenBalances } from "@/lib/hooks/useTokenBalances";
 import { useSimulator } from "@/lib/hooks/useSimulator";
 import { useProfile } from "@/lib/store/profileStore";
 import { useActivity } from "@/lib/store/activityStore";
@@ -42,10 +43,13 @@ export default function DashboardPage() {
     stocks,
     totalDividendsEarned,
     availableToHarvest,
+    totalPortfolioValue,
+    rawPortfolioValue,
     refetch,
     isLoading,
   } = useAlloyStocks();
   const { simulateDividend } = useSimulator();
+  const { mintTestTokens, isMinting } = useTokenBalances();
 
   // Modal states
   const [showQr, setShowQr] = useState(false);
@@ -109,12 +113,53 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* Fresh Wallet Onboarding Prompt: Mint Test Stocks onto Base Sepolia */}
+        {isConnected && !isLoading && rawPortfolioValue === 0 && (
+          <div className="p-4 sm:p-5 rounded-3xl bg-linear-to-r from-[#E0F2FE]/80 via-white to-[#DCFCE7]/60 border border-[#BAE6FD] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="w-10 h-10 rounded-2xl bg-[#007FFF] text-white flex items-center justify-center shrink-0 shadow-xs">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="font-heading font-medium text-sm text-neutral-900 flex items-center gap-2">
+                  <span>Base Sepolia Live Portfolio</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E0F2FE] text-[#007FFF] font-medium border border-[#BAE6FD]">
+                    0 Shares Detected
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-500 font-normal mt-0.5">
+                  Mint 100 test AAPLc shares onchain to test dynamic yield multipliers and private dividend extraction.
+                </p>
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              size="sm"
+              isLoading={isMinting === "AAPLc"}
+              onClick={async () => {
+                try {
+                  await mintTestTokens("AAPLc", "100");
+                  await refetch();
+                } catch (err) {
+                  console.error("Minting failed", err);
+                }
+              }}
+              className="shrink-0 cursor-pointer"
+            >
+              {isMinting === "AAPLc" ? "Minting on Base..." : "Mint 100 AAPLc"}
+            </Button>
+          </div>
+        )}
+
         {/* 1. Signature Hero Card (Live Web3 multi-asset dividends) */}
         <section aria-label="Dividend Portfolio Hero">
           <SignatureHeroCard
             title="Total Dividends Earned"
             totalDividendsEarned={totalDividendsEarned}
             availableToHarvest={availableToHarvest}
+            totalPortfolioValue={totalPortfolioValue}
+            isLoading={isLoading}
             items={stocks}
             // bannerText="Cash dividends extractable privately via ERC-5564 stealth rails"
             onHarvestClick={(token: StockTokenItem) => {

@@ -26,6 +26,8 @@ interface SignatureHeroCardProps {
   title?: string;
   totalDividendsEarned?: string;
   availableToHarvest?: string;
+  totalPortfolioValue?: string;
+  isLoading?: boolean;
   items?: StockTokenItem[];
   bannerText?: string;
   onHarvestClick?: (token: StockTokenItem) => void;
@@ -66,6 +68,8 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
   title = "Total Dividends Earned",
   totalDividendsEarned = "+$1,428.50",
   availableToHarvest = "+$124.50",
+  totalPortfolioValue = "$68,000.00",
+  isLoading = false,
   items = defaultItems,
   bannerText = "Dividends harvested privately through Alloy",
   onHarvestClick,
@@ -101,23 +105,36 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
         </div>
 
         {/* Big Dividend Figure Display */}
-        <div className="space-y-1.5">
-          <div className="flex flex-wrap items-baseline gap-3">
-            <span className="text-4xl sm:text-5xl font-heading font-medium text-neutral-900 tracking-tight">
-              {totalDividendsEarned}
-            </span>
-            <span className="text-xs sm:text-sm font-medium text-[#10B981] px-2.5 py-1 rounded-xl bg-[#DCFCE7] flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>{availableToHarvest} ready to harvest</span>
-            </span>
+        {isLoading ? (
+          <div className="space-y-2 py-1">
+            <div className="flex flex-wrap items-baseline gap-3">
+              <div className="h-11 sm:h-13 w-52 bg-neutral-200/80 rounded-2xl animate-pulse" />
+              <div className="h-7 w-36 bg-[#DCFCE7]/70 rounded-xl animate-pulse" />
+            </div>
+            <div className="flex items-center gap-1.5 pt-1">
+              <div className="w-3.5 h-3.5 rounded-full bg-neutral-200/80 animate-pulse" />
+              <div className="h-3.5 w-64 bg-neutral-100 rounded-md animate-pulse" />
+            </div>
           </div>
+        ) : (
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-baseline gap-3">
+              <span className="text-4xl sm:text-5xl font-heading font-medium text-neutral-900 tracking-tight">
+                {totalDividendsEarned}
+              </span>
+              <span className="text-xs sm:text-sm font-medium text-[#10B981] px-2.5 py-1 rounded-xl bg-[#DCFCE7] flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5" />
+                <span>{availableToHarvest} ready to harvest</span>
+              </span>
+            </div>
 
-          {/* Underlying Equity Protected Assurance */}
-          <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-normal">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
-            <span>$68,000.00 stock principal 100% untouched & conserved</span>
+            {/* Underlying Equity Protected Assurance */}
+            <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-normal">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
+              <span>{totalPortfolioValue} stock principal 100% untouched & conserved</span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Section Label: Accruing Dividend Yields */}
         <div className="flex items-center justify-between text-[11px] font-heading font-medium uppercase tracking-wider text-neutral-400 pt-1">
@@ -126,48 +143,72 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
         </div>
 
         {/* Token List: Focused on Dividend Yield & Surplus */}
-        <div className="space-y-2.5">
-          {items.map((token) => (
-            <div
-              key={token.symbol}
-              className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-neutral-50/80 transition-colors duration-150 group"
-            >
-              <div className="flex items-center gap-3">
-                {/* Official SVG Stock Logo */}
-                <StockLogo symbol={token.symbol} size={40} />
-
-                {/* Token and Dividend Info */}
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-neutral-900 text-sm sm:text-base font-medium">
-                      {token.harvestableSurplus}
-                    </span>
-                    <span className="text-neutral-400 text-xs sm:text-sm font-normal">
-                      from {token.symbol}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-[#E0F2FE] text-[#007FFF] border border-[#BAE6FD]">
-                      {token.multiplier}
-                    </span>
-                  </div>
-                  <div className="text-xs text-neutral-400 font-normal">
-                    {token.shares} • {token.valueUsd}
+        {isLoading ? (
+          <div className="space-y-2.5">
+            {[1, 2, 3].map((idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-neutral-50/70 border border-neutral-100/60 animate-pulse"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-neutral-200/80 shrink-0" />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-20 bg-neutral-200/80 rounded" />
+                      <div className="h-3.5 w-16 bg-neutral-100 rounded" />
+                      <div className="h-4 w-12 bg-[#E0F2FE]/70 rounded-md" />
+                    </div>
+                    <div className="h-3 w-36 bg-neutral-100 rounded" />
                   </div>
                 </div>
+                <div className="h-8 w-20 bg-neutral-200/60 rounded-xl" />
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {items.map((token) => (
+              <div
+                key={token.symbol}
+                className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-neutral-50/80 transition-colors duration-150 group"
+              >
+                <div className="flex items-center gap-3">
+                  {/* Official SVG Stock Logo */}
+                  <StockLogo symbol={token.symbol} size={40} />
 
-              {/* Action / Harvest Button */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => onHarvestClick?.(token)}
-                  className="px-3 py-1.5 rounded-xl bg-[#E0F2FE] hover:bg-[#007FFF] text-[#007FFF] hover:text-white text-xs font-normal transition-all duration-150 flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Harvest</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </button>
+                  {/* Token and Dividend Info */}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-neutral-900 text-sm sm:text-base font-medium">
+                        {token.harvestableSurplus}
+                      </span>
+                      <span className="text-neutral-400 text-xs sm:text-sm font-normal">
+                        from {token.symbol}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-[#E0F2FE] text-[#007FFF] border border-[#BAE6FD]">
+                        {token.multiplier}
+                      </span>
+                    </div>
+                    <div className="text-xs text-neutral-400 font-normal">
+                      {token.shares} • {token.valueUsd}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action / Harvest Button */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onHarvestClick?.(token)}
+                    className="px-3 py-1.5 rounded-xl bg-[#E0F2FE] hover:bg-[#007FFF] text-[#007FFF] hover:text-white text-xs font-normal transition-all duration-150 flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Harvest</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Active Demo Alert Banner */}
         {/* remove this unnessacry info */}
