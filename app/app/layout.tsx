@@ -18,7 +18,7 @@ const googleSans = Google_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Alloy — Private Dividend Harvesting on Base",
+  title: "Alloy - Private Dividend Harvesting on Base",
   description:
     "Extract tokenized stock dividends without touching equity principal. Private payouts via Basenames and ERC-5564 stealth addresses.",
 };

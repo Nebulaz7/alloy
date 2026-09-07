@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Info, Scan, ArrowUpRight, X, Sparkles, TrendingUp, ShieldCheck } from "lucide-react";
+import {
+  Info,
+  Scan,
+  ArrowUpRight,
+  X,
+  Sparkles,
+  TrendingUp,
+  ShieldCheck,
+} from "lucide-react";
 import { StockLogo } from "@/components/brand/StockLogos";
 
 export interface StockTokenItem {
@@ -70,7 +78,7 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
       className={`bg-white rounded-3xl border-4 border-[#007FFF] shadow-xs overflow-hidden flex flex-col transition-all duration-200 ${className}`}
     >
       {/* Card Content Area */}
-      <div className="p-6 sm:p-7 space-y-5">
+      <div className="p-4 sm:p-5 space-y-2">
         {/* Header Row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-neutral-600 font-heading text-sm">
@@ -162,7 +170,8 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
         </div>
 
         {/* Active Demo Alert Banner */}
-        {showDemoBanner && (
+        {/* remove this unnessacry info */}
+        {/* {showDemoBanner && (
           <div className="p-3.5 rounded-2xl bg-[#E0F2FE]/70 border border-[#BAE6FD] flex items-start justify-between gap-3 text-xs text-neutral-700">
             <div className="flex items-start gap-2.5">
               <div className="w-5 h-5 rounded-lg bg-[#007FFF] text-white flex items-center justify-center shrink-0 mt-0.5">
@@ -173,7 +182,8 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
                   Apple Corporate Dividend Credited (+1.025x)
                 </div>
                 <div className="text-neutral-600 font-normal">
-                  $75.00 in surplus dividend shares is ready for 1-click private extraction. Your equity principal remains 100% untouched.
+                  $75.00 in surplus dividend shares is ready for 1-click private
+                  extraction. Your equity principal remains 100% untouched.
                 </div>
               </div>
             </div>
@@ -186,13 +196,13 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Full-width Solid Azure Blue Bottom Ribbon Banner */}
-      <div className="bg-[#007FFF] py-3.5 px-6 text-center text-white text-xs sm:text-sm font-medium tracking-wide">
+      {/* <div className="bg-[#007FFF] py-3.5 px-6 text-center text-white text-xs sm:text-sm font-medium tracking-wide">
         {bannerText}
-      </div>
+      </div> */}
     </div>
   );
 };
