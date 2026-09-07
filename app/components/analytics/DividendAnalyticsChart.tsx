@@ -18,7 +18,12 @@ const mockDataByRange: Record<TimeRange, DataPoint[]> = {
     { date: "11:00 AM", amount: 1395.0 },
     { date: "01:00 PM", amount: 1410.5, event: "NVDAc Yield Payout" },
     { date: "03:00 PM", amount: 1410.5 },
-    { date: "04:30 PM", amount: 1428.5, label: "Current", event: "AAPLc Dividend Credited" },
+    {
+      date: "04:30 PM",
+      amount: 1428.5,
+      label: "Current",
+      event: "AAPLc Dividend Credited",
+    },
   ],
   "1W": [
     { date: "Sep 01", amount: 1240.0 },
@@ -76,7 +81,9 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
 }) => {
   const [selectedRange, setSelectedRange] = useState<TimeRange>(initialRange);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [selectedAsset, setSelectedAsset] = useState<"ALL" | "AAPLc" | "NVDAc" | "COINc">("ALL");
+  const [selectedAsset, setSelectedAsset] = useState<
+    "ALL" | "AAPLc" | "NVDAc" | "COINc"
+  >("ALL");
 
   const gradientId = useId();
 
@@ -113,10 +120,20 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
     return data.map((d, idx) => {
       const x = paddingX + (idx / (count - 1)) * (width - paddingX * 2);
       const ratio = (d.amount - minVal) / (maxVal - minVal || 1);
-      const y = height - paddingBottom - ratio * (height - paddingTop - paddingBottom);
+      const y =
+        height - paddingBottom - ratio * (height - paddingTop - paddingBottom);
       return { x, y, ...d };
     });
-  }, [data, minVal, maxVal, width, height, paddingX, paddingTop, paddingBottom]);
+  }, [
+    data,
+    minVal,
+    maxVal,
+    width,
+    height,
+    paddingX,
+    paddingTop,
+    paddingBottom,
+  ]);
 
   // Construct SVG Path string
   const linePath = useMemo(() => {
@@ -140,11 +157,13 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
   }, [linePath, points, height, paddingBottom]);
 
   // Active display point (hovered or latest)
-  const activePoint = hoveredIndex !== null ? points[hoveredIndex] : points[points.length - 1];
+  const activePoint =
+    hoveredIndex !== null ? points[hoveredIndex] : points[points.length - 1];
   const latestAmount = points[points.length - 1]?.amount || 0;
   const startAmount = points[0]?.amount || 0;
   const deltaAmount = +(activePoint.amount - startAmount).toFixed(2);
-  const deltaPct = startAmount > 0 ? +((deltaAmount / startAmount) * 100).toFixed(1) : 0;
+  const deltaPct =
+    startAmount > 0 ? +((deltaAmount / startAmount) * 100).toFixed(1) : 0;
 
   // Grid line values
   const gridLevels = [0.25, 0.5, 0.75];
@@ -169,7 +188,11 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
           {/* Large Hero Dividend Figure */}
           <div className="flex items-baseline gap-3">
             <span className="text-3xl sm:text-4xl font-heading font-medium text-neutral-900 tracking-tight">
-              +${activePoint.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              +$
+              {activePoint.amount.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </span>
             <span className="text-xs sm:text-sm font-medium text-[#10B981]">
               (+${deltaAmount.toFixed(2)} in {selectedRange})
@@ -183,7 +206,9 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
             {activePoint.event && (
               <>
                 <span>•</span>
-                <span className="text-[#007FFF] font-medium">{activePoint.event}</span>
+                <span className="text-[#007FFF] font-medium">
+                  {activePoint.event}
+                </span>
               </>
             )}
           </div>
@@ -241,8 +266,21 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
             </linearGradient>
 
             {/* Subtle Dot Pattern in Chart Fill */}
-            <pattern id="dot-pattern" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="0.75" fill="#10B981" fillOpacity="0.18" />
+            <pattern
+              id="dot-pattern"
+              x="0"
+              y="0"
+              width="12"
+              height="12"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle
+                cx="2"
+                cy="2"
+                r="0.75"
+                fill="#10B981"
+                fillOpacity="0.18"
+              />
             </pattern>
           </defs>
 
@@ -318,13 +356,23 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
           {/* Date labels along bottom */}
           {points.map((pt, i) => {
             // Show first, middle, and last date labels to avoid crowding
-            if (i === 0 || i === Math.floor(points.length / 2) || i === points.length - 1) {
+            if (
+              i === 0 ||
+              i === Math.floor(points.length / 2) ||
+              i === points.length - 1
+            ) {
               return (
                 <text
                   key={pt.date}
                   x={pt.x}
                   y={height - 12}
-                  textAnchor={i === 0 ? "start" : i === points.length - 1 ? "end" : "middle"}
+                  textAnchor={
+                    i === 0
+                      ? "start"
+                      : i === points.length - 1
+                        ? "end"
+                        : "middle"
+                  }
                   className="fill-neutral-400 text-[11px] font-normal"
                 >
                   {pt.date}
@@ -339,7 +387,9 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
       {/* Asset Source Filter Pills */}
       <div className="pt-2 border-t border-neutral-100 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-neutral-400 font-normal">Filter by asset:</span>
+          <span className="text-xs text-neutral-400 font-normal">
+            Filter by asset:
+          </span>
           {(["ALL", "AAPLc", "NVDAc", "COINc"] as const).map((sym) => {
             const isSelected = selectedAsset === sym;
             return (

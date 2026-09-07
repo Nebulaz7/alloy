@@ -186,12 +186,12 @@ All modals use centered rounded cards (`rounded-3xl`), pure white backgrounds, s
    - **Desktop Left Sidebar**: App brand header, rounded navigation item pills with soft active backgrounds, and bottom promotional doodle card (*"Alloy is currently in beta on Base Sepolia"*).
    - **Mobile Floating Bottom Dock**: Detached floating pill bar with active tab highlighted by a soft Azure Blue squircle (`#E0F2FE`) and solid Azure Blue icon (`#007FFF`).
 
-4. **Element 4: Profile & Interactive Nametag Card** [Next]
+4. **Element 4: Profile & Interactive Nametag Card** [Completed]
    - Onboarding nametag card (`alloy.base.eth/username` or `username.base.eth`).
    - Dynamic activation: Transitions to solid Azure Blue (`bg-[#007FFF]`, white text) with an *"Available!"* checkmark pill.
    - Profile avatar preview with 3D playful emoji icon & color badge.
 
-5. **Element 5: Avatar Customization System**
+5. **Element 5: Avatar Customization System** [Next]
    - 10 solid playful color swatches with active selection ring.
    - Curated grid of 16 playful 3D-style emojis (money bag, sparkle, diamond, rocket, etc.).
    - *"Surprise me!"* dice button pill.

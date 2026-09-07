@@ -10,6 +10,7 @@ interface AppShellProps {
   activeTab?: NavTabId;
   onTabChange?: (tab: NavTabId) => void;
   showBetaLogo?: boolean;
+  connectedHandle?: string;
 }
 
 const TAB_TITLES: Record<NavTabId, { title: string; subtitle: string }> = {
@@ -40,6 +41,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   activeTab: externalTab,
   onTabChange: externalOnTabChange,
   showBetaLogo = false,
+  connectedHandle = "bob.base.eth",
 }) => {
   const [internalTab, setInternalTab] = useState<NavTabId>("dashboard");
 
@@ -70,7 +72,7 @@ export const AppShell: React.FC<AppShellProps> = ({
         <AppHeader
           title={currentMeta.title}
           subtitle={currentMeta.subtitle}
-          connectedHandle="bob.base.eth"
+          connectedHandle={connectedHandle}
         />
 
         {/* Page Content Centered Column */}

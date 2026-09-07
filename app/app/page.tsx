@@ -17,10 +17,15 @@ import {
   Send,
   Zap,
   TrendingUp,
+  X,
+  UserCheck,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { NavTabId } from "@/components/navigation/Sidebar";
 import { DividendAnalyticsChart } from "@/components/analytics/DividendAnalyticsChart";
+import { InteractiveNametagCard } from "@/components/profile/InteractiveNametagCard";
+import { ProfileAvatarCard, ProfileData } from "@/components/profile/ProfileAvatarCard";
+import { NametagClaimFlow } from "@/components/profile/NametagClaimFlow";
 import { StockLogo } from "@/components/brand/StockLogos";
 import { SignatureHeroCard } from "@/components/ui/SignatureHeroCard";
 import { PersonalLinkCard } from "@/components/ui/PersonalLinkCard";
@@ -76,6 +81,12 @@ export default function Home() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [previewMode, setPreviewMode] = useState<"responsive" | "mobile">("responsive");
 
+  // Element 4: Profile & Nametag state
+  const [username, setUsername] = useState("nebula");
+  const [avatarEmoji, setAvatarEmoji] = useState("🎧");
+  const [avatarBg, setAvatarBg] = useState("#18181B");
+  const [showClaimModal, setShowClaimModal] = useState(false);
+
   // Harvest Studio interactive state
   const [selectedStock, setSelectedStock] = useState<"AAPLc" | "NVDAc" | "COINc">("AAPLc");
   const [selectedDest, setSelectedDest] = useState<"USDC" | "cNGN" | "CLANKER">("USDC");
@@ -111,24 +122,32 @@ export default function Home() {
       case "dashboard":
         return (
           <div className="space-y-6">
-            {/* Element 3 Banner */}
+            {/* Element 4 Banner */}
             <div className="p-4 rounded-2xl bg-white border border-[#BAE6FD] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-[#E0F2FE] text-[#007FFF] flex items-center justify-center shrink-0">
-                  <Zap className="w-5 h-5" />
+                  <UserCheck className="w-5 h-5" />
                 </div>
                 <div>
                   <h2 className="font-heading font-medium text-sm text-neutral-900">
-                    Element 3 Active: Navigation Shells
+                    Element 4 Active: Profile & Interactive Nametag Card
                   </h2>
                   <p className="text-xs text-neutral-500 font-normal">
-                    Desktop Left Sidebar & Mobile Detached Floating Dock
+                    Dynamic Azure Blue card, winking mascot stamp & Basename claiming
                   </p>
                 </div>
               </div>
 
               {/* Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => setShowClaimModal(true)}
+                  className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#007FFF] hover:bg-[#0066FF] text-white shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Claim Handle</span>
+                </button>
+
                 <button
                   onClick={() => setShowBetaLogo(!showBetaLogo)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-normal border transition-colors cursor-pointer ${
@@ -187,16 +206,23 @@ export default function Home() {
 
             {/* 2. Personal Link / Basename Card */}
             <div className="space-y-2">
-              <div className="px-1">
+              <div className="flex items-center justify-between px-1">
                 <span className="text-xs font-heading font-medium uppercase tracking-wider text-neutral-400">
                   Basename Identity Card
                 </span>
+                <button
+                  onClick={() => setShowClaimModal(true)}
+                  className="text-xs text-[#007FFF] hover:text-[#0066FF] font-normal cursor-pointer flex items-center gap-1"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  <span>Claim / Edit Handle</span>
+                </button>
               </div>
 
               <PersonalLinkCard
                 title="Your Personal Link"
                 subtitle="Share to receive dividends privately"
-                handle="bob.base.eth"
+                handle={`${username}.base.eth`}
                 onShowQr={() => alert("QR modal will open in Element 7!")}
                 onOpenLink={() =>
                   window.open(
@@ -549,29 +575,18 @@ export default function Home() {
       case "settings":
         return (
           <div className="space-y-6">
-            {/* Profile Card */}
-            <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-heading font-medium text-xl text-neutral-900">
-                  Profile & Identity
-                </h2>
-                <span className="text-xs px-2.5 py-1 rounded-xl bg-[#E0F2FE] text-[#007FFF] font-normal">
-                  Basename Verified
-                </span>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#F9FAFB] border border-neutral-100">
-                <div className="w-14 h-14 rounded-full bg-neutral-900 text-white flex items-center justify-center text-xl shadow-xs">
-                  🎧
-                </div>
-                <div className="space-y-0.5">
-                  <div className="font-medium text-sm text-neutral-900">bob.base.eth</div>
-                  <div className="text-xs text-neutral-400 font-normal">
-                    0xD568...14eC • Base Sepolia
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Profile & Identity Card (Element 4) */}
+            <ProfileAvatarCard
+              mode="settings"
+              profile={{
+                username,
+                avatarEmoji,
+                avatarBg,
+                address: "0xD5687794c8E1b69F477911Df56170679CB6414eC",
+                isVerified: true,
+              }}
+              onEditAvatar={() => setShowClaimModal(true)}
+            />
 
             {/* Network & Privacy */}
             <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 shadow-xs space-y-4">
@@ -645,22 +660,74 @@ export default function Home() {
             activeTab={currentTab}
             onTabChange={setCurrentTab}
             showBetaLogo={showBetaLogo}
+            connectedHandle={`${username}.base.eth`}
           >
             {renderTabContent()}
           </AppShell>
         </div>
+
+        {/* Claim Modal in Mobile Preview */}
+        {showClaimModal && (
+          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="relative w-full max-w-xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-neutral-200">
+              <button
+                onClick={() => setShowClaimModal(false)}
+                className="absolute top-5 right-5 w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition-colors cursor-pointer"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <NametagClaimFlow
+                initialUsername={username}
+                onComplete={(newProfile) => {
+                  setUsername(newProfile.username);
+                  setAvatarEmoji(newProfile.avatarEmoji);
+                  setAvatarBg(newProfile.avatarBg);
+                  setShowClaimModal(false);
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
   // Default Responsive Layout (Desktop Sidebar on screens >= md, Mobile Floating Dock on screens < md)
   return (
-    <AppShell
-      activeTab={currentTab}
-      onTabChange={setCurrentTab}
-      showBetaLogo={showBetaLogo}
-    >
-      {renderTabContent()}
-    </AppShell>
+    <>
+      <AppShell
+        activeTab={currentTab}
+        onTabChange={setCurrentTab}
+        showBetaLogo={showBetaLogo}
+        connectedHandle={`${username}.base.eth`}
+      >
+        {renderTabContent()}
+      </AppShell>
+
+      {/* Claim Modal in Responsive Mode */}
+      {showClaimModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="relative w-full max-w-xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-neutral-200">
+            <button
+              onClick={() => setShowClaimModal(false)}
+              className="absolute top-5 right-5 w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition-colors cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <NametagClaimFlow
+              initialUsername={username}
+              onComplete={(newProfile) => {
+                setUsername(newProfile.username);
+                setAvatarEmoji(newProfile.avatarEmoji);
+                setAvatarBg(newProfile.avatarBg);
+                setShowClaimModal(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
