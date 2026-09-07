@@ -38,5 +38,10 @@ h1,
 h2,
 .font-heading {
   font-family:
-    var(--font-heading), "Comic Relief", "Comic Sans MS", cursive, sans-serif;
+    var(--font-body),
+    "Google Sans",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-weight: 400;
 }
