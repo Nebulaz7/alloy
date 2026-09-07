@@ -192,12 +192,13 @@ All modals use centered rounded cards (`rounded-3xl`), pure white backgrounds, s
    - Dynamic activation: Transitions to solid Azure Blue (`bg-[#007FFF]`, white text) with winking mascot stamp and an *"Available!"* checkmark pill.
    - Profile avatar preview with 3D playful emoji icon & Basename verification badge.
 
-5. **Element 5: Avatar Customization System** [Next]
+5. **Element 5: Avatar Customization System** [Completed]
    - 10 solid playful color swatches with active selection ring.
-   - Curated grid of 16 playful 3D-style emojis (money bag, sparkle, diamond, rocket, etc.).
-   - *"Surprise me!"* dice button pill.
+   - Curated grid of playful 3D-style emojis (money bag, sparkle, diamond, rocket, etc.).
+   - *"Surprise me!"* dice button pill with random color + emoji pairing & wiggle animation.
+   - Modal component ([`EmojiColorPickerModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/profile/EmojiColorPickerModal.tsx)) wired to Onboarding avatar setup and Settings.
 
-6. **Element 6: Activity & Transaction Rows**
+6. **Element 6: Activity & Transaction Rows** [Next]
    - Circular token/user avatar with directional badge (green down-arrow for incoming harvests).
    - Bold amount display (`+100 USDC` in `#10B981`, or meme coins).
    - Micro-metadata pills (`personal`, `stealth payout`, BaseScan link).

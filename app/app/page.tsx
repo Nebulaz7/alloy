@@ -19,6 +19,7 @@ import {
   TrendingUp,
   X,
   UserCheck,
+  Palette,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { NavTabId } from "@/components/navigation/Sidebar";
@@ -26,6 +27,7 @@ import { DividendAnalyticsChart } from "@/components/analytics/DividendAnalytics
 import { InteractiveNametagCard } from "@/components/profile/InteractiveNametagCard";
 import { ProfileAvatarCard, ProfileData } from "@/components/profile/ProfileAvatarCard";
 import { NametagClaimFlow } from "@/components/profile/NametagClaimFlow";
+import { EmojiColorPickerModal } from "@/components/profile/EmojiColorPickerModal";
 import { StockLogo } from "@/components/brand/StockLogos";
 import { SignatureHeroCard } from "@/components/ui/SignatureHeroCard";
 import { PersonalLinkCard } from "@/components/ui/PersonalLinkCard";
@@ -81,11 +83,12 @@ export default function Home() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [previewMode, setPreviewMode] = useState<"responsive" | "mobile">("responsive");
 
-  // Element 4: Profile & Nametag state (Full Screen Mode)
+  // Element 4 & 5: Profile, Nametag & Avatar state
   const [username, setUsername] = useState("nebula");
   const [avatarEmoji, setAvatarEmoji] = useState("🎧");
   const [avatarBg, setAvatarBg] = useState("#18181B");
   const [isSettingUpIdentity, setIsSettingUpIdentity] = useState(false);
+  const [showAvatarPickerModal, setShowAvatarPickerModal] = useState(false);
 
   // Harvest Studio interactive state
   const [selectedStock, setSelectedStock] = useState<"AAPLc" | "NVDAc" | "COINc">("AAPLc");
@@ -122,18 +125,18 @@ export default function Home() {
       case "dashboard":
         return (
           <div className="space-y-6">
-            {/* Element 4 Banner */}
+            {/* Element 5 Banner */}
             <div className="p-4 rounded-2xl bg-white border border-[#BAE6FD] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-[#E0F2FE] text-[#007FFF] flex items-center justify-center shrink-0">
-                  <UserCheck className="w-5 h-5" />
+                  <Palette className="w-5 h-5" />
                 </div>
                 <div>
                   <h2 className="font-heading font-medium text-sm text-neutral-900">
-                    Element 4 Active: Profile & Interactive Nametag Card
+                    Element 5 Active: Avatar Customization System
                   </h2>
                   <p className="text-xs text-neutral-500 font-normal">
-                    Full-screen identity setup, username.base.eth format & dynamic Azure card
+                    10 color swatches, 3D emojis &amp; &quot;Surprise me!&quot; dice button
                   </p>
                 </div>
               </div>
@@ -141,11 +144,19 @@ export default function Home() {
               {/* Controls */}
               <div className="flex flex-wrap items-center gap-2">
                 <button
-                  onClick={() => setIsSettingUpIdentity(true)}
+                  onClick={() => setShowAvatarPickerModal(true)}
                   className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#007FFF] hover:bg-[#0066FF] text-white shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Claim Basename</span>
+                  <Palette className="w-3.5 h-3.5" />
+                  <span>Customize Avatar</span>
+                </button>
+
+                <button
+                  onClick={() => setIsSettingUpIdentity(true)}
+                  className="px-3 py-1.5 rounded-xl text-xs font-normal bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-neutral-500" />
+                  <span>Basename Setup</span>
                 </button>
 
                 <button
@@ -223,6 +234,8 @@ export default function Home() {
                 title="Your Personal Link"
                 subtitle="Share to receive dividends privately"
                 handle={`${username}.base.eth`}
+                avatarEmoji={avatarEmoji}
+                avatarBg={avatarBg}
                 onShowQr={() => alert("QR modal will open in Element 7!")}
                 onOpenLink={() =>
                   window.open(
@@ -585,7 +598,8 @@ export default function Home() {
                 address: "0xD5687794c8E1b69F477911Df56170679CB6414eC",
                 isVerified: true,
               }}
-              onEditAvatar={() => setIsSettingUpIdentity(true)}
+              onEditAvatar={() => setShowAvatarPickerModal(true)}
+              onEditUsername={() => setIsSettingUpIdentity(true)}
             />
 
             {/* Network & Privacy */}
@@ -708,23 +722,61 @@ export default function Home() {
             onTabChange={setCurrentTab}
             showBetaLogo={showBetaLogo}
             connectedHandle={`${username}.base.eth`}
+            avatarEmoji={avatarEmoji}
+            avatarBg={avatarBg}
+            onEditAvatar={() => setShowAvatarPickerModal(true)}
           >
             {renderTabContent()}
           </AppShell>
         </div>
+
+        {/* Element 5: Avatar Picker Modal in Mobile Preview */}
+        {showAvatarPickerModal && (
+          <EmojiColorPickerModal
+            isOpen={showAvatarPickerModal}
+            initialEmoji={avatarEmoji}
+            initialColor={avatarBg}
+            onClose={() => setShowAvatarPickerModal(false)}
+            onSave={(emoji, color) => {
+              setAvatarEmoji(emoji);
+              setAvatarBg(color);
+              setShowAvatarPickerModal(false);
+            }}
+          />
+        )}
       </div>
     );
   }
 
   // Default Responsive Layout (Desktop Sidebar on screens >= md, Mobile Floating Dock on screens < md)
   return (
-    <AppShell
-      activeTab={currentTab}
-      onTabChange={setCurrentTab}
-      showBetaLogo={showBetaLogo}
-      connectedHandle={`${username}.base.eth`}
-    >
-      {renderTabContent()}
-    </AppShell>
+    <>
+      <AppShell
+        activeTab={currentTab}
+        onTabChange={setCurrentTab}
+        showBetaLogo={showBetaLogo}
+        connectedHandle={`${username}.base.eth`}
+        avatarEmoji={avatarEmoji}
+        avatarBg={avatarBg}
+        onEditAvatar={() => setShowAvatarPickerModal(true)}
+      >
+        {renderTabContent()}
+      </AppShell>
+
+      {/* Element 5: Avatar Picker Modal in Responsive Layout */}
+      {showAvatarPickerModal && (
+        <EmojiColorPickerModal
+          isOpen={showAvatarPickerModal}
+          initialEmoji={avatarEmoji}
+          initialColor={avatarBg}
+          onClose={() => setShowAvatarPickerModal(false)}
+          onSave={(emoji, color) => {
+            setAvatarEmoji(emoji);
+            setAvatarBg(color);
+            setShowAvatarPickerModal(false);
+          }}
+        />
+      )}
+    </>
   );
 }

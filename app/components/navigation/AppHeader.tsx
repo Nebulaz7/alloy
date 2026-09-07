@@ -10,6 +10,9 @@ interface AppHeaderProps {
   title: string;
   subtitle?: string;
   connectedHandle?: string;
+  avatarEmoji?: string;
+  avatarBg?: string;
+  onAvatarClick?: () => void;
   onConnectWallet?: () => void;
   className?: string;
 }
@@ -18,6 +21,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   title,
   subtitle,
   connectedHandle = "bob.base.eth",
+  avatarEmoji = "🎧",
+  avatarBg = "#18181B",
+  onAvatarClick,
   onConnectWallet,
   className = "",
 }) => {
@@ -54,11 +60,17 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
         {/* Connected Handle / Wallet Action Button */}
         {connectedHandle ? (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-neutral-200/80 text-xs text-neutral-700 shadow-2xs hover:border-[#4DA6FF] transition-colors cursor-pointer">
-            <div className="w-5 h-5 rounded-lg bg-[#E0F2FE] flex items-center justify-center text-[#007FFF]">
-              <ShieldCheck className="w-3.5 h-3.5" />
+          <div
+            onClick={onAvatarClick}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-neutral-200/80 text-xs text-neutral-700 shadow-2xs hover:border-[#007FFF] transition-all cursor-pointer group"
+          >
+            <div
+              style={{ backgroundColor: avatarBg }}
+              className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] shrink-0 transition-transform group-hover:scale-110 shadow-2xs"
+            >
+              <span>{avatarEmoji}</span>
             </div>
-            <span className="font-medium text-neutral-800">{connectedHandle}</span>
+            <span className="font-medium text-neutral-800 font-heading">{connectedHandle}</span>
           </div>
         ) : (
           <Button

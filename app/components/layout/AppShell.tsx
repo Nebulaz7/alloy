@@ -11,6 +11,9 @@ interface AppShellProps {
   onTabChange?: (tab: NavTabId) => void;
   showBetaLogo?: boolean;
   connectedHandle?: string;
+  avatarEmoji?: string;
+  avatarBg?: string;
+  onEditAvatar?: () => void;
 }
 
 const TAB_TITLES: Record<NavTabId, { title: string; subtitle: string }> = {
@@ -42,6 +45,9 @@ export const AppShell: React.FC<AppShellProps> = ({
   onTabChange: externalOnTabChange,
   showBetaLogo = false,
   connectedHandle = "bob.base.eth",
+  avatarEmoji = "🎧",
+  avatarBg = "#18181B",
+  onEditAvatar,
 }) => {
   const [internalTab, setInternalTab] = useState<NavTabId>("dashboard");
 
@@ -63,6 +69,10 @@ export const AppShell: React.FC<AppShellProps> = ({
         currentTab={currentTab}
         onTabChange={handleTabChange}
         showBetaLogo={showBetaLogo}
+        connectedHandle={connectedHandle}
+        avatarEmoji={avatarEmoji}
+        avatarBg={avatarBg}
+        onEditAvatar={onEditAvatar}
         className="hidden md:flex shrink-0"
       />
 
@@ -73,6 +83,9 @@ export const AppShell: React.FC<AppShellProps> = ({
           title={currentMeta.title}
           subtitle={currentMeta.subtitle}
           connectedHandle={connectedHandle}
+          avatarEmoji={avatarEmoji}
+          avatarBg={avatarBg}
+          onAvatarClick={onEditAvatar}
         />
 
         {/* Page Content Centered Column */}

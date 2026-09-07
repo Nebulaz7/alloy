@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ChevronLeft, ShieldCheck, Sparkles } from "lucide-react";
 import { InteractiveNametagCard } from "./InteractiveNametagCard";
 import { ProfileAvatarCard, ProfileData } from "./ProfileAvatarCard";
+import { EmojiColorPickerModal } from "./EmojiColorPickerModal";
 import { AlloyLogo } from "@/components/brand/AlloyLogo";
 
 interface NametagClaimFlowProps {
@@ -20,6 +21,7 @@ export const NametagClaimFlow: React.FC<NametagClaimFlowProps> = ({
   className = "",
 }) => {
   const [step, setStep] = useState<"claim" | "avatar_preview">("claim");
+  const [showPicker, setShowPicker] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
     username: initialUsername,
     avatarEmoji: "🎧",
@@ -74,8 +76,27 @@ export const NametagClaimFlow: React.FC<NametagClaimFlowProps> = ({
           <ProfileAvatarCard
             mode="welcome"
             profile={profile}
+            onEditAvatar={() => setShowPicker(true)}
             onEditUsername={() => setStep("claim")}
             onContinue={() => onComplete?.(profile)}
+          />
+        )}
+
+        {/* Emoji & Color Picker Modal (Element 5) */}
+        {showPicker && (
+          <EmojiColorPickerModal
+            isOpen={showPicker}
+            initialEmoji={profile.avatarEmoji}
+            initialColor={profile.avatarBg}
+            onClose={() => setShowPicker(false)}
+            onSave={(emoji, color) => {
+              setProfile((prev) => ({
+                ...prev,
+                avatarEmoji: emoji,
+                avatarBg: color,
+              }));
+              setShowPicker(false);
+            }}
           />
         )}
       </main>

@@ -7,6 +7,8 @@ interface PersonalLinkCardProps {
   title?: string;
   subtitle?: string;
   handle?: string;
+  avatarEmoji?: string;
+  avatarBg?: string;
   onShowQr?: () => void;
   onOpenLink?: () => void;
   className?: string;
@@ -16,6 +18,8 @@ export const PersonalLinkCard: React.FC<PersonalLinkCardProps> = ({
   title = "Your Personal Link",
   subtitle = "Share to receive dividends privately",
   handle = "bob.base.eth",
+  avatarEmoji = "🎧",
+  avatarBg = "#007FFF",
   onShowQr,
   onOpenLink,
   className = "",
@@ -51,9 +55,12 @@ export const PersonalLinkCard: React.FC<PersonalLinkCardProps> = ({
       {/* Link Bar Container */}
       <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-[#F9FAFB] border border-neutral-100 gap-3">
         <div className="flex items-center gap-3 overflow-hidden">
-          {/* Avatar Icon Circle with Light Azure Tint */}
-          <div className="w-9 h-9 rounded-xl bg-[#007FFF] text-white flex items-center justify-center shrink-0 shadow-2xs">
-            <ShieldCheck className="w-5 h-5 text-white" />
+          {/* Avatar Icon Circle */}
+          <div
+            style={{ backgroundColor: avatarBg }}
+            className="w-9 h-9 rounded-xl text-white flex items-center justify-center shrink-0 shadow-2xs text-lg"
+          >
+            <span>{avatarEmoji}</span>
           </div>
 
           {/* Handle Text */}

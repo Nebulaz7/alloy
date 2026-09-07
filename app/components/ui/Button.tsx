@@ -3,7 +3,7 @@
 import React from "react";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "azure-light" | "azure-soft" | "dark" | "secondary" | "outline" | "ghost";
+  variant?: "primary" | "azure-light" | "azure-soft" | "emerald" | "dark" | "secondary" | "outline" | "ghost";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -17,6 +17,8 @@ const variantStyles = {
     "bg-[#4DA6FF] hover:bg-[#3695F5] active:bg-[#1E82EC] text-white shadow-xs font-medium border border-transparent",
   "azure-soft":
     "bg-[#E0F2FE] hover:bg-[#BAE6FD] active:bg-[#7DD3FC] text-[#007FFF] font-medium border border-[#BAE6FD]/60",
+  emerald:
+    "bg-[#10B981] hover:bg-[#059669] active:bg-[#047857] text-white shadow-xs font-medium border border-transparent",
   dark: "bg-[#111827] hover:bg-black active:bg-neutral-800 text-white font-medium border border-transparent",
   secondary:
     "bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 text-neutral-800 font-medium border border-neutral-200/60",

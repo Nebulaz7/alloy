@@ -38,6 +38,10 @@ interface SidebarProps {
   currentTab: NavTabId;
   onTabChange: (tab: NavTabId) => void;
   showBetaLogo?: boolean;
+  connectedHandle?: string;
+  avatarEmoji?: string;
+  avatarBg?: string;
+  onEditAvatar?: () => void;
   className?: string;
 }
 
@@ -45,6 +49,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentTab,
   onTabChange,
   showBetaLogo = false,
+  connectedHandle = "bob.base.eth",
+  avatarEmoji = "🎧",
+  avatarBg = "#18181B",
+  onEditAvatar,
   className = "",
 }) => {
   return (
@@ -100,8 +108,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Bottom Promo & Social Links */}
-      <div className="pt-4 border-t border-neutral-100">
+      {/* Bottom Profile Pill & Promo Card */}
+      <div className="pt-4 border-t border-neutral-100 space-y-3">
+        {/* Profile Avatar Pill */}
+        <div
+          onClick={onEditAvatar}
+          className="p-2.5 rounded-2xl bg-[#F9FAFB] hover:bg-[#F3F4F6] border border-neutral-200/80 flex items-center justify-between transition-colors cursor-pointer group shadow-2xs"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div
+              style={{ backgroundColor: avatarBg }}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-lg shrink-0 shadow-2xs transition-transform group-hover:scale-105"
+            >
+              <span>{avatarEmoji}</span>
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-medium text-neutral-900 truncate font-heading">
+                {connectedHandle}
+              </div>
+              <div className="text-[10px] text-neutral-400 font-normal font-mono">
+                0xD568...14eC
+              </div>
+            </div>
+          </div>
+          <span className="text-[10px] text-[#007FFF] font-medium px-2 py-0.5 rounded-lg bg-[#E0F2FE] border border-[#BAE6FD]/60">
+            Edit
+          </span>
+        </div>
+
         <AlloyBetaPromoCard />
       </div>
     </aside>
