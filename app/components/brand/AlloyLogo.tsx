@@ -6,6 +6,7 @@ import { AlloyMascot } from "./AlloyMascot";
 
 interface AlloyLogoProps {
   size?: "sm" | "md" | "lg";
+  variant?: "default" | "no-beta" | "icon-only";
   showBeta?: boolean;
   showWordmark?: boolean;
   href?: string;
@@ -38,12 +39,15 @@ const sizeConfig = {
 
 export const AlloyLogo: React.FC<AlloyLogoProps> = ({
   size = "md",
-  showBeta = true,
-  showWordmark = true,
+  variant = "default",
+  showBeta,
+  showWordmark,
   href = "/",
   className = "",
 }) => {
   const config = sizeConfig[size];
+  const isBetaVisible = showBeta !== undefined ? showBeta : variant === "default";
+  const isWordmarkVisible = showWordmark !== undefined ? showWordmark : variant !== "icon-only";
 
   const content = (
     <div className={`inline-flex items-center ${config.gap} select-none group ${className}`}>
@@ -51,7 +55,7 @@ export const AlloyLogo: React.FC<AlloyLogoProps> = ({
       <AlloyMascot size={config.mascotSize} className="transition-transform duration-200 group-hover:scale-105" />
 
       {/* Typographic Wordmark */}
-      {showWordmark ? (
+      {isWordmarkVisible ? (
         <div className="flex items-center">
           <span className={`font-black tracking-tight text-neutral-900 ${config.textSize}`}>
             alloy
@@ -61,7 +65,7 @@ export const AlloyLogo: React.FC<AlloyLogoProps> = ({
       ) : null}
 
       {/* BETA Tag Pill */}
-      {showBeta ? (
+      {isBetaVisible ? (
         <span
           className={`font-extrabold uppercase tracking-wider text-neutral-500 bg-neutral-100 rounded-full border border-neutral-200/80 ${config.betaText}`}
         >

@@ -36,8 +36,9 @@ Alloy's design is inspired by modern, consumer-grade, playful fintech products (
 ### 2.2 Playful Brand & Accent Colors
 | Role | Hex | Tailwind Equivalent | Usage |
 | :--- | :--- | :--- | :--- |
-| **Primary Azure Blue** | `#007FFF` / `#0066FF` | `blue-600` / `sky-500` | Primary hero card border, main CTA buttons, brand badges, active dock icon |
-| **Soft Azure / Ice Tint** | `#E0F2FE` / `#EFF6FF` | `sky-100` / `blue-50` | Active mobile icon badge background, notification pills, subtle hover fills |
+| **Primary Azure Blue** | `#007FFF` | `blue-600` | Primary hero card border, primary action buttons, brand accents |
+| **Light Azure Blue** | `#4DA6FF` | `sky-400` / `blue-400` | Secondary accents, interactive badges, paired contrast with primary Azure |
+| **Soft Azure / Ice Tint** | `#E0F2FE` | `sky-100` | Active mobile dock background, alert banners, subtle hover fills |
 | **Positive Green** | `#10B981` | `emerald-500` | Incoming transaction values (`+100 USDC`), positive yield indicators, checkmarks |
 | **Solid Dark** | `#111827` | `gray-900` | Primary active filter pills (`All`), high-contrast dark buttons |
 | **Playful Purple** | `#A855F7` | `purple-500` | Currency preference icon |
@@ -46,16 +47,20 @@ Alloy's design is inspired by modern, consumer-grade, playful fintech products (
 
 ---
 
-## 3. Typography & Numerical Display
+## 3. Typography & Button Specifications
 
-- **Font Family**: Modern, rounded, geometric sans-serif (e.g., `Plus Jakarta Sans` or `Geist Sans` with high legibility).
-- **Scale**:
-  - Hero Balances: `text-4xl` to `text-5xl` font-extrabold (`$1,240.00`).
-  - Page Titles: `text-2xl` font-bold text-center on mobile & desktop.
-  - Card Headings: `text-lg` font-bold (`Your Accrued Dividends`, `Your Personal Link`).
-  - Body & Labels: `text-sm` font-medium.
-  - Micro-tags & Badges: `text-xs` font-semibold uppercase tracking-wider.
-- **Tabular Figures**: `font-mono` or `tabular-nums` for token balances and multipliers to avoid layout jitter during live updates.
+- **Font Family**:
+  - **Headings & Titles**: `Google Sans` (`--font-heading`, clean, modern geometric feel).
+  - **Body & Labels**: `Comic Relief` (`--font-body`, playful, organic, friendly consumer vibe).
+- **Weight Philosophy**:
+  - **Do NOT make text overly bold**. Use `font-normal` (400) for body, subtitles, descriptions, and metadata.
+  - Use `font-medium` (500) or `font-semibold` (600) selectively for card headings, balances, and button labels.
+- **Button Geometry**:
+  - **Rectangular with rounded edges** (`rounded-xl` / 12px or `rounded-2xl` / 16px).
+  - Avoid generic full-pill shapes (`rounded-full`) for main buttons.
+- **Icons & Logos**:
+  - Standard UI icons: `lucide-react`.
+  - Stock assets: Official SVG logos for **Apple** (`AAPLc`), **NVIDIA** (`NVDAc`), and **Coinbase** (`COINc`).
 
 ---
 

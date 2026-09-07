@@ -73,10 +73,20 @@ export const AlloyMascot: React.FC<AlloyMascotProps> = ({
 
       {/* Left Eye: Wink or Open based on expression */}
       {expression === "smile" ? (
-        <ellipse cx="39" cy={withSquircle ? "48" : "45"} rx="4.5" ry="5.5" fill="#111827" />
+        <ellipse
+          cx="39"
+          cy={withSquircle ? "48" : "45"}
+          rx="4.5"
+          ry="5.5"
+          fill="#111827"
+        />
       ) : (
         <path
-          d={withSquircle ? "M36 49C37.5 45 42 45 44 49" : "M36 46C37.5 42 42 42 44 46"}
+          d={
+            withSquircle
+              ? "M36 49C37.5 45 42 45 44 49"
+              : "M36 46C37.5 42 42 42 44 46"
+          }
           stroke="#111827"
           strokeWidth="3.5"
           strokeLinecap="round"
@@ -85,7 +95,13 @@ export const AlloyMascot: React.FC<AlloyMascotProps> = ({
       )}
 
       {/* Right Eye: Playful Open Eye with Glint */}
-      <ellipse cx="61" cy={withSquircle ? "48" : "45"} rx="4.5" ry="5.5" fill="#111827" />
+      <ellipse
+        cx="61"
+        cy={withSquircle ? "48" : "45"}
+        rx="4.5"
+        ry="5.5"
+        fill="#111827"
+      />
       <circle cx="63" cy={withSquircle ? "46" : "43"} r="1.8" fill="#FFFFFF" />
 
       {/* Rosy Blush Cheeks */}
@@ -108,7 +124,11 @@ export const AlloyMascot: React.FC<AlloyMascotProps> = ({
 
       {/* Cheerful Curved Smile */}
       <path
-        d={withSquircle ? "M44 56C46.5 61 53.5 61 56 56" : "M44 53C46.5 58 53.5 58 56 53"}
+        d={
+          withSquircle
+            ? "M44 56C46.5 61 53.5 61 56 56"
+            : "M44 53C46.5 58 53.5 58 56 53"
+        }
         stroke="#111827"
         strokeWidth="3.2"
         strokeLinecap="round"
