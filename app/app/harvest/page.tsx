@@ -237,7 +237,7 @@ export default function HarvestPage() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-heading uppercase tracking-wider text-neutral-400 font-medium">
-                  Dividend Surplus Studio
+                  Harvest Dividends
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#DCFCE7] text-[#15803D] border border-[#BBF7D0]">
                   Live Multipliers

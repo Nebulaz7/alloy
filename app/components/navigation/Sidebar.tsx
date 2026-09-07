@@ -29,7 +29,7 @@ export interface NavItemConfig {
 
 export const NAV_ITEMS: NavItemConfig[] = [
   { id: "dashboard", label: "Dashboard", icon: Home },
-  { id: "harvest", label: "Harvest Studio", icon: Repeat },
+  { id: "harvest", label: "Harvest Dividends", icon: Repeat },
   { id: "activities", label: "Activities", icon: ReceiptText },
   { id: "simulator", label: "Simulator", icon: Sparkles, badge: "Base" },
   { id: "settings", label: "Settings", icon: Settings },

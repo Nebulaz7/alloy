@@ -23,7 +23,7 @@ const TAB_TITLES: Record<NavTabId, { title: string; subtitle: string }> = {
     subtitle: "Private Programmable Dividend Harvesting on Base",
   },
   harvest: {
-    title: "Harvest Studio",
+    title: "Harvest Dividends",
     subtitle: "Extract Surplus Yield Without Touching Principal",
   },
   activities: {

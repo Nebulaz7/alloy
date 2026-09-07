@@ -71,6 +71,9 @@ interface DividendAnalyticsChartProps {
   initialRange?: TimeRange;
   className?: string;
   onRangeChange?: (range: TimeRange) => void;
+  customTotalAmount?: string;
+  isPreview?: boolean;
+  onAssetChange?: (asset: "ALL" | "AAPLc" | "NVDAc" | "COINc") => void;
 }
 
 export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
@@ -78,6 +81,9 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
   initialRange = "1M",
   className = "",
   onRangeChange,
+  customTotalAmount,
+  isPreview = true,
+  onAssetChange,
 }) => {
   const [selectedRange, setSelectedRange] = useState<TimeRange>(initialRange);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -188,14 +194,22 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
           {/* Large Hero Dividend Figure */}
           <div className="flex items-baseline gap-3">
             <span className="text-3xl sm:text-4xl font-heading font-medium text-neutral-900 tracking-tight">
-              +$
-              {activePoint.amount.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              {customTotalAmount ? (
+                customTotalAmount
+              ) : (
+                <>
+                  +$
+                  {activePoint.amount.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </>
+              )}
             </span>
             <span className="text-xs sm:text-sm font-medium text-[#10B981]">
-              (+${deltaAmount.toFixed(2)} in {selectedRange})
+              {!isPreview && customTotalAmount === "+$0.00"
+                ? "No live surplus accrued yet"
+                : `(+${deltaAmount.toFixed(2)} in ${selectedRange})`}
             </span>
           </div>
 
@@ -395,7 +409,10 @@ export const DividendAnalyticsChart: React.FC<DividendAnalyticsChartProps> = ({
             return (
               <button
                 key={sym}
-                onClick={() => setSelectedAsset(sym)}
+                onClick={() => {
+                  setSelectedAsset(sym);
+                  onAssetChange?.(sym);
+                }}
                 className={`px-2.5 py-1 rounded-xl text-xs transition-colors cursor-pointer ${
                   isSelected
                     ? "bg-[#E0F2FE] text-[#007FFF] font-medium border border-[#BAE6FD]"

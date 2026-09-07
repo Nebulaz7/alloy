@@ -1,16 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { ActivityItem } from "@/components/ui/ActivityRow";
+import { useAccount } from "wagmi";
 
 interface ActivityContextType {
   activities: ActivityItem[];
   addActivity: (activity: Omit<ActivityItem, "id" | "timestamp"> & { timestamp?: string }) => void;
   clearActivities: () => void;
+  exportCSV: (filename?: string) => void;
   isHydrated: boolean;
+  isPreview: boolean;
 }
 
-const STORAGE_KEY = "alloy_activity_v1";
+const PREVIEW_KEY = "alloy_activity_preview";
 
 const SEED_ACTIVITIES: ActivityItem[] = [
   {
@@ -64,51 +67,130 @@ const SEED_ACTIVITIES: ActivityItem[] = [
   },
 ];
 
+export function exportActivitiesToCSV(activities: ActivityItem[], filename = "alloy_activities.csv") {
+  const headers = [
+    "ID",
+    "Timestamp",
+    "Type",
+    "Title",
+    "Subtitle",
+    "Amount",
+    "Token Symbol",
+    "Direction",
+    "Recipient",
+    "Multiplier",
+    "Note",
+    "Tags",
+    "Transaction Hash",
+    "BaseScan URL",
+  ];
+
+  const rows = activities.map((act) => {
+    const isPositive = act.isPositive ?? act.type !== "outgoing";
+    const direction = isPositive ? "INCOMING" : "OUTGOING";
+    const baseScanUrl = act.txHash ? `https://sepolia.basescan.org/tx/${act.txHash}` : "";
+
+    return [
+      act.id,
+      `"${act.timestamp || ""}"`,
+      act.type,
+      `"${(act.title || "").replace(/"/g, '""')}"`,
+      `"${(act.subtitle || "").replace(/"/g, '""')}"`,
+      act.amount,
+      act.tokenSymbol,
+      direction,
+      `"${(act.recipient || "").replace(/"/g, '""')}"`,
+      `"${(act.multiplier || "").replace(/"/g, '""')}"`,
+      `"${(act.note || "").replace(/"/g, '""')}"`,
+      `"${(act.tags?.join("; ") || "").replace(/"/g, '""')}"`,
+      act.txHash || "",
+      baseScanUrl,
+    ].join(",");
+  });
+
+  const csvContent = [headers.join(","), ...rows].join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 const ActivityContext = createContext<ActivityContextType | undefined>(undefined);
 
 export const ActivityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { address, isConnected } = useAccount();
   const [activities, setActivities] = useState<ActivityItem[]>(SEED_ACTIVITIES);
   const [isHydrated, setIsHydrated] = useState(false);
 
+  // Derive current storage key based on authentication
+  const currentKey = isConnected && address
+    ? `alloy_activity_${address.toLowerCase()}`
+    : PREVIEW_KEY;
+
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setActivities(JSON.parse(stored));
+      if (isConnected && address) {
+        const stored = localStorage.getItem(currentKey);
+        if (stored) {
+          setActivities(JSON.parse(stored));
+        } else {
+          // Fresh authenticated user starts with 0 activities until they harvest or receive
+          setActivities([]);
+        }
       } else {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_ACTIVITIES));
+        // Preview mode: show seed mock activities
+        const stored = localStorage.getItem(PREVIEW_KEY);
+        if (stored) {
+          setActivities(JSON.parse(stored));
+        } else {
+          setActivities(SEED_ACTIVITIES);
+          localStorage.setItem(PREVIEW_KEY, JSON.stringify(SEED_ACTIVITIES));
+        }
       }
     } catch {
       // LocalStorage unavailable
     } finally {
       setIsHydrated(true);
     }
-  }, []);
+  }, [isConnected, address, currentKey]);
 
-  const addActivity = (
-    item: Omit<ActivityItem, "id" | "timestamp"> & { timestamp?: string }
-  ) => {
-    const newItem: ActivityItem = {
-      ...item,
-      id: `act-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      timestamp: item.timestamp || "Just now",
-    };
+  const addActivity = useCallback(
+    (item: Omit<ActivityItem, "id" | "timestamp"> & { timestamp?: string }) => {
+      const newItem: ActivityItem = {
+        ...item,
+        id: `act-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        timestamp: item.timestamp || "Just now",
+      };
 
-    setActivities((prev) => {
-      const updated = [newItem, ...prev];
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch {}
-      return updated;
-    });
-  };
+      setActivities((prev) => {
+        const updated = [newItem, ...prev];
+        try {
+          localStorage.setItem(currentKey, JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
+    },
+    [currentKey]
+  );
 
-  const clearActivities = () => {
+  const clearActivities = useCallback(() => {
     setActivities([]);
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(currentKey);
     } catch {}
-  };
+  }, [currentKey]);
+
+  const exportCSV = useCallback(
+    (filename = `alloy_activities_${new Date().toISOString().slice(0, 10)}.csv`) => {
+      exportActivitiesToCSV(activities, filename);
+    },
+    [activities]
+  );
 
   return (
     <ActivityContext.Provider
@@ -116,7 +198,9 @@ export const ActivityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         activities,
         addActivity,
         clearActivities,
+        exportCSV,
         isHydrated,
+        isPreview: !isConnected,
       }}
     >
       {children}

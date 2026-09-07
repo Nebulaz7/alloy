@@ -214,7 +214,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <div className="font-medium text-sm text-neutral-900 flex items-center gap-1.5">
-                  <span>Harvest Studio</span>
+                  <span>Harvest Dividends</span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#DCFCE7] text-[#15803D] font-medium">
                     {availableToHarvest}
                   </span>
