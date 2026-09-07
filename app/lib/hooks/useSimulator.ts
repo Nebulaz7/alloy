@@ -27,6 +27,30 @@ export function useSimulator() {
     setIsSuccess(false);
     setError(null);
 
+    if (!address) {
+      // Preview mode simulation
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const mockHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}` as `0x${string}`;
+      setTxHash(mockHash);
+      setIsSuccess(true);
+      addActivity({
+        type: "incoming",
+        title: `Simulated ${stockSymbol} Dividend`,
+        subtitle: `Corporate Action (+$${dividendAmount}/share)`,
+        amount: (parseFloat(dividendAmount) * 100).toFixed(2),
+        tokenSymbol: "USD",
+        tags: ["dividend", "simulation"],
+        note: `Multiplier increased in Preview Mode`,
+        recipient: "All Stock Holders",
+        avatarEmoji: "⚡",
+        avatarBg: "#FEF3C7",
+        isPositive: true,
+        txHash: mockHash,
+      });
+      setIsSimulating(false);
+      return mockHash;
+    }
+
     try {
       const stockAddress =
         stockSymbol === "AAPLc"
@@ -79,8 +103,15 @@ export function useSimulator() {
     }
   };
 
+  const reset = () => {
+    setIsSuccess(false);
+    setTxHash(null);
+    setError(null);
+  };
+
   return {
     simulateDividend,
+    reset,
     isSimulating,
     isSuccess,
     txHash,
