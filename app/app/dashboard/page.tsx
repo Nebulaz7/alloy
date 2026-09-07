@@ -31,6 +31,7 @@ import { useTokenBalances } from "@/lib/hooks/useTokenBalances";
 import { useSimulator } from "@/lib/hooks/useSimulator";
 import { useProfile } from "@/lib/store/profileStore";
 import { useActivity } from "@/lib/store/activityStore";
+import { openReownModal } from "@/lib/wagmi";
 import { Button } from "@/components/ui/Button";
 import { NavTabId } from "@/components/navigation/Sidebar";
 
@@ -56,6 +57,11 @@ export default function DashboardPage() {
   const [showSim, setShowSim] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [selectedTx, setSelectedTx] = useState<ActivityItem | null>(null);
+
+  // Handle opening Reown wallet popup for connected address
+  const handleOpenReownWallet = () => {
+    openReownModal("Account");
+  };
 
   // Handle sidebar & dock navigation
   const handleTabChange = (tab: NavTabId) => {
@@ -90,6 +96,7 @@ export default function DashboardPage() {
       avatarEmoji={profile.avatarEmoji}
       avatarBg={profile.avatarBg}
       onEditAvatar={() => setShowAvatarPicker(true)}
+      onOpenWallet={handleOpenReownWallet}
     >
       <div className="space-y-6 select-none">
         {/* Unauthenticated / Demo Preview Banner */}
@@ -161,6 +168,7 @@ export default function DashboardPage() {
             totalPortfolioValue={totalPortfolioValue}
             isLoading={isLoading}
             items={stocks}
+            onScanClick={() => setShowQr(true)}
             // bannerText="Cash dividends extractable privately via ERC-5564 stealth rails"
             onHarvestClick={(token: StockTokenItem) => {
               // Direct to harvest studio with selected token
@@ -282,6 +290,7 @@ export default function DashboardPage() {
         isOpen={showQr}
         onClose={() => setShowQr(false)}
         handle={profile.basename || "nebula.base.eth"}
+        address={address}
       />
 
       {/* Transaction Receipt Modal */}

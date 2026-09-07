@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Copy, Check, Share2, ExternalLink } from "lucide-react";
+import { X, Copy, Check, Share2, Wallet, Link as LinkIcon, ShieldCheck } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/Button";
 import { AlloyLogo } from "@/components/brand/AlloyLogo";
 
@@ -9,6 +10,7 @@ interface QRCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
   handle?: string;
+  address?: string;
   className?: string;
 }
 
@@ -16,32 +18,39 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
   isOpen,
   onClose,
   handle = "nebula.base.eth",
+  address,
   className = "",
 }) => {
+  const [activeTab, setActiveTab] = useState<"address" | "link">("address");
   const [copied, setCopied] = useState(false);
+
+  // Fallback demo address if unauthenticated
+  const activeAddress = address || "0xeca6Ff5Ce16bf15E38a4F28DE6da2397438f7918";
   const paymentUrl = `https://alloy.cash/${handle.replace(".base.eth", "")}`;
 
   if (!isOpen) return null;
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(paymentUrl);
+  const currentQrValue = activeTab === "address" ? activeAddress : paymentUrl;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(currentQrValue);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
+    if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: "Pay via Alloy",
-          text: `Send private dividend payouts to ${handle} on Base!`,
-          url: paymentUrl,
+          title: activeTab === "address" ? `Alloy Wallet Address` : `Pay ${handle} via Alloy`,
+          text: activeTab === "address" ? `Send funds to ${activeAddress} on Base` : `Send private dividend payouts to ${handle} on Base!`,
+          url: currentQrValue,
         });
-      } catch (err) {
-        handleCopyLink();
+      } catch {
+        handleCopy();
       }
     } else {
-      handleCopyLink();
+      handleCopy();
     }
   };
 
@@ -50,10 +59,10 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
       onClick={onClose}
       className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 select-none animate-in fade-in duration-200"
     >
-      {/* Centered Modal Card matching inspo Screenshot 2026-09-07 003516.png */}
+      {/* Centered Modal Card */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative w-full max-w-sm sm:max-w-md bg-white rounded-[32px] border border-neutral-200/90 shadow-2xl p-6 sm:p-8 space-y-6 text-center overflow-hidden flex flex-col items-center justify-between ${className}`}
+        className={`relative w-full max-w-sm sm:max-w-md bg-white rounded-[32px] border border-neutral-200/90 shadow-2xl p-6 sm:p-7 space-y-5 text-center overflow-hidden flex flex-col items-center justify-between ${className}`}
       >
         {/* Top-Right Close Button */}
         <button
@@ -67,108 +76,102 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
         {/* Header Title & Subtitle */}
         <div className="space-y-1 pt-1">
           <h2 className="font-heading font-medium text-2xl text-neutral-900 tracking-tight">
-            Your Payment Link
+            {activeTab === "address" ? "Receive via Wallet QR" : "Your Payment Link"}
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-400 font-normal">
-            Scan to open private dividend link
+          <p className="text-xs text-neutral-400 font-normal">
+            {activeTab === "address"
+              ? "Scan with any crypto wallet on Base Sepolia"
+              : "Scan to open private dividend link"}
           </p>
         </div>
 
-        {/* Centerpiece: Clean Vector QR Code with Winking Alloy Mascot Stamp */}
-        <div className="p-4 sm:p-5 rounded-[36px] bg-white border-4 border-neutral-900 shadow-md relative group">
-          <svg
-            viewBox="0 0 160 160"
-            className="w-48 h-48 sm:w-56 sm:h-56"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Corner Alignment Squares */}
-            {/* Top-Left */}
-            <rect x="10" y="10" width="40" height="40" rx="10" stroke="#111827" strokeWidth="8" />
-            <rect x="22" y="22" width="16" height="16" rx="4" fill="#111827" />
-
-            {/* Top-Right */}
-            <rect x="110" y="10" width="40" height="40" rx="10" stroke="#111827" strokeWidth="8" />
-            <rect x="122" y="22" width="16" height="16" rx="4" fill="#111827" />
-
-            {/* Bottom-Left */}
-            <rect x="10" y="110" width="40" height="40" rx="10" stroke="#111827" strokeWidth="8" />
-            <rect x="22" y="122" width="16" height="16" rx="4" fill="#111827" />
-
-            {/* Simulated Data Pattern Matrix */}
-            <circle cx="65" cy="18" r="4" fill="#111827" />
-            <circle cx="80" cy="18" r="4" fill="#111827" />
-            <circle cx="95" cy="18" r="4" fill="#111827" />
-
-            <circle cx="65" cy="32" r="4" fill="#111827" />
-            <circle cx="95" cy="32" r="4" fill="#111827" />
-
-            <circle cx="65" cy="46" r="4" fill="#111827" />
-            <circle cx="80" cy="46" r="4" fill="#111827" />
-            <circle cx="95" cy="46" r="4" fill="#111827" />
-
-            <circle cx="18" cy="65" r="4" fill="#111827" />
-            <circle cx="32" cy="65" r="4" fill="#111827" />
-            <circle cx="46" cy="65" r="4" fill="#111827" />
-
-            <circle cx="114" cy="65" r="4" fill="#111827" />
-            <circle cx="128" cy="65" r="4" fill="#111827" />
-            <circle cx="142" cy="65" r="4" fill="#111827" />
-
-            <circle cx="18" cy="80" r="4" fill="#111827" />
-            <circle cx="32" cy="80" r="4" fill="#111827" />
-            <circle cx="46" cy="80" r="4" fill="#111827" />
-
-            <circle cx="114" cy="80" r="4" fill="#111827" />
-            <circle cx="142" cy="80" r="4" fill="#111827" />
-
-            <circle cx="18" cy="95" r="4" fill="#111827" />
-            <circle cx="46" cy="95" r="4" fill="#111827" />
-
-            <circle cx="114" cy="95" r="4" fill="#111827" />
-            <circle cx="128" cy="95" r="4" fill="#111827" />
-            <circle cx="142" cy="95" r="4" fill="#111827" />
-
-            <circle cx="65" cy="114" r="4" fill="#111827" />
-            <circle cx="80" cy="114" r="4" fill="#111827" />
-            <circle cx="95" cy="114" r="4" fill="#111827" />
-
-            <circle cx="65" cy="128" r="4" fill="#111827" />
-            <circle cx="95" cy="128" r="4" fill="#111827" />
-
-            <circle cx="65" cy="142" r="4" fill="#111827" />
-            <circle cx="80" cy="142" r="4" fill="#111827" />
-            <circle cx="95" cy="142" r="4" fill="#111827" />
-
-            {/* Center Winking Alloy Mascot Badge */}
-            <circle cx="80" cy="80" r="22" fill="#FFFFFF" stroke="#111827" strokeWidth="4" />
-            <g transform="translate(68, 68)">
-              <circle cx="12" cy="12" r="11" fill="#FBBF24" />
-              <path d="M8 10C9 9 10 9 11 10" stroke="#111827" strokeWidth="1.2" strokeLinecap="round" />
-              <ellipse cx="14.5" cy="10" rx="1.2" ry="1.5" fill="#111827" />
-              <path d="M10 14C11 15 13 15 14 14" stroke="#111827" strokeWidth="1.2" strokeLinecap="round" />
-            </g>
-          </svg>
-        </div>
-
-        {/* URL Pill Container matching Screenshot 003516 */}
-        <div className="w-full">
+        {/* Toggle Mode Pills */}
+        <div className="flex items-center p-1 rounded-2xl bg-neutral-100 border border-neutral-200/70 text-xs font-medium w-full max-w-xs">
           <button
             type="button"
-            onClick={handleCopyLink}
-            className="w-full py-2.5 px-4 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 text-neutral-800 text-xs sm:text-sm font-normal font-mono transition-all flex items-center justify-center gap-2 cursor-pointer border border-neutral-200/70"
+            onClick={() => {
+              setActiveTab("address");
+              setCopied(false);
+            }}
+            className={`flex-1 py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === "address"
+                ? "bg-white text-neutral-900 shadow-2xs font-medium"
+                : "text-neutral-500 hover:text-neutral-800"
+            }`}
           >
-            <span className="truncate">{paymentUrl}</span>
+            <Wallet className="w-3.5 h-3.5 text-[#007FFF]" />
+            <span>Wallet Address</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("link");
+              setCopied(false);
+            }}
+            className={`flex-1 py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === "link"
+                ? "bg-white text-neutral-900 shadow-2xs font-medium"
+                : "text-neutral-500 hover:text-neutral-800"
+            }`}
+          >
+            <LinkIcon className="w-3.5 h-3.5 text-[#10B981]" />
+            <span>Payment Link</span>
+          </button>
+        </div>
+
+        {/* Centerpiece: Real Scalable SVG QR Code with Center Coin Mascot Badge */}
+        <div className="p-4 sm:p-5 rounded-[32px] bg-white border-4 border-neutral-900 shadow-md relative group flex items-center justify-center">
+          <div className="relative flex items-center justify-center">
+            <QRCodeSVG
+              value={currentQrValue}
+              size={210}
+              level="H"
+              marginSize={1}
+              bgColor="#FFFFFF"
+              fgColor="#111827"
+              className="rounded-xl"
+            />
+            {/* Center Winking Alloy Mascot Badge */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-10 h-10 rounded-xl bg-white p-0.5 shadow-sm border border-neutral-200/90 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-[#FBBF24] flex items-center justify-center text-sm shadow-2xs">
+                  <span>🪙</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Address / Link Pill Container */}
+        <div className="w-full space-y-1.5">
+          <button
+            type="button"
+            onClick={handleCopy}
+            title={copied ? "Copied!" : "Click to copy"}
+            className="w-full py-2.5 px-4 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 text-neutral-800 text-xs font-normal font-mono transition-all flex items-center justify-between gap-2 cursor-pointer border border-neutral-200/70"
+          >
+            <span className="truncate">
+              {activeTab === "address" ? activeAddress : paymentUrl}
+            </span>
             {copied ? (
-              <Check className="w-4 h-4 text-[#007FFF] shrink-0" />
+              <span className="flex items-center gap-1 text-[#007FFF] text-xs font-medium shrink-0">
+                <Check className="w-4 h-4" />
+                <span>Copied</span>
+              </span>
             ) : (
               <Copy className="w-4 h-4 text-neutral-400 shrink-0" />
             )}
           </button>
+
+          {/* Network tag */}
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-400 font-normal">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
+            <span>Base Sepolia (Chain ID: 84532)</span>
+          </div>
         </div>
 
-        {/* Brand Mark Stamp at bottom matching inspo */}
-        <div className="pt-1 flex items-center justify-center">
+        {/* Brand Mark Stamp */}
+        <div className="flex items-center justify-center">
           <AlloyLogo size="sm" showBeta={false} />
         </div>
 
@@ -189,11 +192,11 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
             type="button"
             variant="primary"
             size="md"
-            onClick={handleCopyLink}
+            onClick={handleCopy}
             className="flex-1 justify-center text-xs gap-1.5"
           >
             {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? "Copied!" : "Copy Link"}</span>
+            <span>{copied ? "Copied!" : activeTab === "address" ? "Copy Address" : "Copy Link"}</span>
           </Button>
         </div>
       </div>

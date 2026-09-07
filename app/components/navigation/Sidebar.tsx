@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { AlloyLogo } from "@/components/brand/AlloyLogo";
 import { AlloyBetaPromoCard } from "./AlloyBetaPromoCard";
+import { useAccount } from "wagmi";
 
 export type NavTabId =
   | "dashboard"
@@ -55,6 +56,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onEditAvatar,
   className = "",
 }) => {
+  const { address } = useAccount();
+  const displayAddress = address
+    ? `${address.slice(0, 6)}...${address.slice(-4)}`
+    : "0xD568...14eC";
   return (
     <aside
       className={`w-64 h-screen sticky top-0 flex flex-col justify-between bg-white border-r border-neutral-200/80 px-4 py-6 select-none ${className}`}
@@ -127,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {connectedHandle}
               </div>
               <div className="text-[10px] text-neutral-400 font-normal font-mono">
-                0xD568...14eC
+                {displayAddress}
               </div>
             </div>
           </div>

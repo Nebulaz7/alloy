@@ -5,6 +5,7 @@ import { AlloyLogo } from "@/components/brand/AlloyLogo";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Wallet, ShieldCheck } from "lucide-react";
+import { openReownModal } from "@/lib/wagmi";
 
 interface AppHeaderProps {
   title: string;
@@ -27,6 +28,22 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   onConnectWallet,
   className = "",
 }) => {
+  const handleWalletPillClick = () => {
+    if (onAvatarClick) {
+      onAvatarClick();
+    } else {
+      openReownModal("Account");
+    }
+  };
+
+  const handleConnectClick = () => {
+    if (onConnectWallet) {
+      onConnectWallet();
+    } else {
+      openReownModal("Connect");
+    }
+  };
+
   return (
     <header
       className={`sticky top-0 z-40 bg-[#F9FAFB]/90 backdrop-blur-md border-b border-neutral-200/60 px-4 sm:px-6 py-4 flex items-center justify-between transition-all ${className}`}
@@ -61,7 +78,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         {/* Connected Handle / Wallet Action Button */}
         {connectedHandle ? (
           <div
-            onClick={onAvatarClick}
+            onClick={handleWalletPillClick}
+            title="Manage connected wallet"
             className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-neutral-200/80 text-xs text-neutral-700 shadow-2xs hover:border-[#007FFF] transition-all cursor-pointer group"
           >
             <div
@@ -76,7 +94,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           <Button
             size="sm"
             variant="primary"
-            onClick={onConnectWallet}
+            onClick={handleConnectClick}
             className="flex items-center gap-1.5 text-xs"
           >
             <Wallet className="w-3.5 h-3.5" />

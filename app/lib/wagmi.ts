@@ -41,39 +41,39 @@ const metadata = {
   icons: ["https://alloy.cash/favicon.ico"],
 };
 
-// 4. Initialize modal only on client-side
-let appKitInstance: ReturnType<typeof createAppKit> | null = null;
+// 4. Initialize modal
+export const modal = createAppKit({
+  adapters: [wagmiAdapter],
+  projectId,
+  networks,
+  defaultNetwork: baseSepolia,
+  metadata,
+  features: {
+    analytics: false,
+    email: false,
+    socials: false,
+  },
+  themeMode: "light",
+  themeVariables: {
+    "--w3m-color-mix": "#007FFF",
+    "--w3m-color-mix-strength": 15,
+    "--w3m-border-radius-master": "16px",
+    "--w3m-font-family": "var(--font-body, system-ui)",
+  },
+});
 
-export function getAppKit() {
-  if (typeof window !== "undefined" && !appKitInstance) {
+export function openReownModal(view: "Account" | "Connect" = "Account") {
+  if (typeof window !== "undefined") {
     try {
-      appKitInstance = createAppKit({
-        adapters: [wagmiAdapter],
-        projectId,
-        networks,
-        defaultNetwork: baseSepolia,
-        metadata,
-        features: {
-          analytics: false,
-          email: false,
-          socials: false,
-        },
-        themeMode: "light",
-        themeVariables: {
-          "--w3m-color-mix": "#007FFF",
-          "--w3m-color-mix-strength": 15,
-          "--w3m-border-radius-master": "16px",
-          "--w3m-font-family": "var(--font-body, system-ui)",
-        },
-      });
+      modal.open({ view }).catch(() => modal.open());
     } catch {
-      // Graceful fallback if Reown initialization is suppressed
+      // Graceful fallback
     }
   }
-  return appKitInstance;
 }
 
-// Auto-initialize in client environment
-if (typeof window !== "undefined") {
-  getAppKit();
+export function getAppKit() {
+  return modal;
 }
+
+

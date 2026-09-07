@@ -31,6 +31,7 @@ interface SignatureHeroCardProps {
   items?: StockTokenItem[];
   bannerText?: string;
   onHarvestClick?: (token: StockTokenItem) => void;
+  onScanClick?: () => void;
   className?: string;
 }
 
@@ -73,6 +74,7 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
   items = defaultItems,
   bannerText = "Dividends harvested privately through Alloy",
   onHarvestClick,
+  onScanClick,
   className = "",
 }) => {
   const [showDemoBanner, setShowDemoBanner] = useState(true);
@@ -97,6 +99,7 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
 
           {/* Top-Right Action (Lucide Scan icon) */}
           <button
+            onClick={onScanClick}
             aria-label="Scan or QR"
             className="w-9 h-9 rounded-xl bg-neutral-100 hover:bg-[#E0F2FE] hover:text-[#007FFF] flex items-center justify-center text-neutral-600 transition-colors cursor-pointer"
           >

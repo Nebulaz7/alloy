@@ -14,6 +14,7 @@ interface AppShellProps {
   avatarEmoji?: string;
   avatarBg?: string;
   onEditAvatar?: () => void;
+  onOpenWallet?: () => void;
 }
 
 const TAB_TITLES: Record<NavTabId, { title: string; subtitle: string }> = {
@@ -48,6 +49,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   avatarEmoji = "🎧",
   avatarBg = "#18181B",
   onEditAvatar,
+  onOpenWallet,
 }) => {
   const [internalTab, setInternalTab] = useState<NavTabId>("dashboard");
 
@@ -85,7 +87,8 @@ export const AppShell: React.FC<AppShellProps> = ({
           connectedHandle={connectedHandle}
           avatarEmoji={avatarEmoji}
           avatarBg={avatarBg}
-          onAvatarClick={onEditAvatar}
+          onAvatarClick={onOpenWallet}
+          onConnectWallet={onOpenWallet}
         />
 
         {/* Page Content Centered Column */}
