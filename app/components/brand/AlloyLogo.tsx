@@ -9,7 +9,7 @@ interface AlloyLogoProps {
   variant?: "default" | "no-beta" | "icon-only";
   showBeta?: boolean;
   showWordmark?: boolean;
-  href?: string;
+  href?: string | null;
   className?: string;
 }
 
@@ -46,38 +46,53 @@ export const AlloyLogo: React.FC<AlloyLogoProps> = ({
   className = "",
 }) => {
   const config = sizeConfig[size];
-  const isBetaVisible = showBeta !== undefined ? showBeta : variant === "default";
-  const isWordmarkVisible = showWordmark !== undefined ? showWordmark : variant !== "icon-only";
+  const isBetaVisible =
+    showBeta !== undefined ? showBeta : variant === "default";
+  const isWordmarkVisible =
+    showWordmark !== undefined ? showWordmark : variant !== "icon-only";
 
   const content = (
-    <div className={`inline-flex items-center ${config.gap} select-none group ${className}`}>
+    <div
+      className={`inline-flex items-center ${config.gap} select-none group ${className}`}
+    >
       {/* Mascot Icon in Azure Squircle */}
-      <AlloyMascot size={config.mascotSize} className="transition-transform duration-200 group-hover:scale-105" />
+      <AlloyMascot
+        size={config.mascotSize}
+        className="transition-transform duration-200 group-hover:scale-105"
+      />
 
       {/* Typographic Wordmark */}
       {isWordmarkVisible ? (
-        <div className="flex items-center">
-          <span className={`font-black tracking-tight text-neutral-900 ${config.textSize}`}>
+        <div className="flex items-center logo-font">
+          <span
+            className={`font-black tracking-tight text-neutral-900 ${config.textSize}`}
+          >
             alloy
           </span>
-          <span className={`inline-block rounded-full bg-[#007FFF] ml-0.5 ${config.dotSize}`} />
+          <span
+            className={`inline-block rounded-full bg-[#007FFF] ml-0.5 ${config.dotSize}`}
+          />
         </div>
       ) : null}
 
       {/* BETA Tag Pill */}
       {isBetaVisible ? (
-        <span
-          className={`font-extrabold uppercase tracking-wider text-neutral-500 bg-neutral-100 rounded-full border border-neutral-200/80 ${config.betaText}`}
-        >
-          Beta
-        </span>
+        // <span
+        //   className={`font-extrabold uppercase tracking-wider text-neutral-500 bg-neutral-100 rounded-full border border-neutral-200/80 ${config.betaText}`}
+        // >
+        //   Beta
+        // </span>
+        <span></span>
       ) : null}
     </div>
   );
 
   if (href) {
     return (
-      <Link href={href} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#007FFF] rounded-2xl">
+      <Link
+        href={href}
+        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#007FFF] rounded-2xl"
+      >
         {content}
       </Link>
     );

@@ -22,6 +22,13 @@ export const wagmiAdapter = new WagmiAdapter({
   ssr: true,
   projectId,
   networks,
+  connectors: [
+    coinbaseWallet({
+      appName: "Alloy",
+      preference: { options: "smartWalletOnly" },
+    }),
+    injected(),
+  ],
 });
 
 export const config = wagmiAdapter.wagmiConfig;

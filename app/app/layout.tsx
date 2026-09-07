@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Comic_Relief, Google_Sans } from "next/font/google";
+import { AlloyProviders } from "@/lib/providers";
 import "./globals.css";
 
 const comicRelief = Comic_Relief({
@@ -32,7 +33,9 @@ export default function RootLayout({
       lang="en"
       className={`${comicRelief.variable} ${googleSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AlloyProviders>{children}</AlloyProviders>
+      </body>
     </html>
   );
 }

@@ -49,3 +49,8 @@ h2,
 /*  font-family:
     var(--font-heading), "Comic Relief", "Comic Sans MS", cursive, sans-serif;
  */
+
+.logo-font {
+  font-family:
+    var(--font-heading), "Comic Relief", "Comic Sans MS", cursive, sans-serif;
+}

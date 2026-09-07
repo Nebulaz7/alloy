@@ -70,7 +70,7 @@ export default function LandingPage() {
               </a>
             </nav>
 
-            <Link href="/onboarding">
+            <Link href="/login">
               <Button variant="primary" size="sm" className="shadow-xs cursor-pointer">
                 <span>Launch App</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -104,7 +104,7 @@ export default function LandingPage() {
 
           {/* Action CTAs */}
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/onboarding">
+            <Link href="/login">
               <Button
                 variant="primary"
                 size="lg"

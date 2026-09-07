@@ -77,7 +77,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, []);
 
-  const updateProfile = (data: Partial<UserProfile>) => {
+  const updateProfile = React.useCallback((data: Partial<UserProfile>) => {
     setProfile((prev) => {
       const updated = { ...prev, ...data };
       if (data.username && !data.basename) {
@@ -91,20 +91,20 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       } catch {}
       return updated;
     });
-  };
+  }, []);
 
-  const setCurrency = (currency: UserProfile["currency"]) => {
+  const setCurrency = React.useCallback((currency: UserProfile["currency"]) => {
     updateProfile({ currency, currencySymbol: CURRENCY_SYMBOLS[currency] });
-  };
+  }, [updateProfile]);
 
-  const resetProfile = () => {
+  const resetProfile = React.useCallback(() => {
     const freshKeys = generateStealthKeyPair();
     const fresh = { ...DEFAULT_PROFILE, stealthKeyPair: freshKeys };
     setProfile(fresh);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
     } catch {}
-  };
+  }, []);
 
   return (
     <ProfileContext.Provider
