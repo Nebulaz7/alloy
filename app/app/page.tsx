@@ -20,6 +20,13 @@ import {
   X,
   UserCheck,
   Palette,
+  LogOut,
+  DollarSign,
+  Wallet,
+  MoreVertical,
+  Info,
+  ChevronRight,
+  ArrowDown,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { NavTabId } from "@/components/navigation/Sidebar";
@@ -28,6 +35,8 @@ import { InteractiveNametagCard } from "@/components/profile/InteractiveNametagC
 import { ProfileAvatarCard, ProfileData } from "@/components/profile/ProfileAvatarCard";
 import { NametagClaimFlow } from "@/components/profile/NametagClaimFlow";
 import { EmojiColorPickerModal } from "@/components/profile/EmojiColorPickerModal";
+import { TxDetailModal } from "@/components/modals/TxDetailModal";
+import { LogoutModal } from "@/components/modals/LogoutModal";
 import { StockLogo } from "@/components/brand/StockLogos";
 import { SignatureHeroCard } from "@/components/ui/SignatureHeroCard";
 import { PersonalLinkCard } from "@/components/ui/PersonalLinkCard";
@@ -42,13 +51,18 @@ const mockActivities: ActivityItem[] = [
     id: "act-1",
     type: "harvest",
     title: "Harvested from AAPLc Multiplier",
-    subtitle: "Apple Dividend Surplus",
+    subtitle: "Apple Dividend Surplus ($2.50/sh)",
     amount: "250.00",
     tokenSymbol: "USDC",
-    tags: ["harvest", "stealth payout", "bob.base.eth"],
-    timestamp: "2 mins ago",
+    tags: ["harvest", "stealth payout"],
+    note: "Apple Q3 Dividend Surplus",
+    timestamp: "Today • 2 mins ago",
     avatarBg: "#E0F2FE",
+    avatarEmoji: "🍏",
     isPositive: true,
+    recipient: "bob.base.eth (Stealth Rail)",
+    multiplier: "1.025x (+2.5% yield)",
+    txHash: "0x7f4a28b9c1048e910248a339948c2014e0b1928437bb9201948ba10283c",
   },
   {
     id: "act-2",
@@ -57,22 +71,66 @@ const mockActivities: ActivityItem[] = [
     subtitle: "1-Click $CLANKER Swap",
     amount: "50.0",
     tokenSymbol: "CLANKER",
-    tags: ["meme ape", "clanker.world"],
-    timestamp: "1 hour ago",
+    tags: ["meme swap", "clanker.world"],
+    note: "Autonomous AI Bot Payout",
+    timestamp: "Today • 1 hour ago",
     avatarBg: "#F3E8FF",
+    avatarEmoji: "🤖",
     isPositive: true,
+    recipient: "bob.base.eth",
+    multiplier: "1.018x (NVDAc Surplus)",
+    txHash: "0x3c99a018f28b492048128ba7729014e9284192837bcda0192849182049",
   },
   {
     id: "act-3",
     type: "incoming",
+    title: "Received from 0x402...3e94",
+    subtitle: "PIVY Demo Token",
+    amount: "100",
+    tokenSymbol: "PDT",
+    tags: ["personal"],
+    note: "Here's a test token ...",
+    timestamp: "Yesterday • 4:20 PM",
+    avatarBg: "#FEF08A",
+    avatarEmoji: "😉",
+    isPositive: true,
+    recipient: "0xD568...14eC",
+    multiplier: "1.000x",
+    txHash: "0x192849182bc8371948ba0128492014e8291048b291048ba92014829104",
+  },
+  {
+    id: "act-4",
+    type: "incoming",
     title: "Private Gift Received",
     subtitle: "ERC-5564 Stealth Announcement",
-    amount: "100.00",
+    amount: "150,000.00",
     tokenSymbol: "cNGN",
-    tags: ["stealth receipt", "alice.base.eth"],
-    timestamp: "Yesterday",
+    tags: ["gift", "stealth receipt"],
+    note: "Emerging Market Remittance",
+    timestamp: "Yesterday • 11:15 AM",
     avatarBg: "#DCFCE7",
+    avatarEmoji: "🇳🇬",
     isPositive: true,
+    recipient: "alice.base.eth",
+    multiplier: "1.012x",
+    txHash: "0x9a8172049182bca8192048128ba014920184b291048ba9201482910482",
+  },
+  {
+    id: "act-5",
+    type: "outgoing",
+    title: "Sent to carol.base.eth",
+    subtitle: "Gifted Dividend Yield",
+    amount: "75.00",
+    tokenSymbol: "USDC",
+    tags: ["gift", "stealth payout"],
+    note: "Happy Birthday Carol!",
+    timestamp: "Sep 4, 2026",
+    avatarBg: "#FCE7F3",
+    avatarEmoji: "🎁",
+    isPositive: false,
+    recipient: "carol.base.eth",
+    multiplier: "1.025x (AAPLc Surplus)",
+    txHash: "0x481928401928ba0192847291048ba920148291048291048ba920148291",
   },
 ];
 
@@ -89,6 +147,66 @@ export default function Home() {
   const [avatarBg, setAvatarBg] = useState("#18181B");
   const [isSettingUpIdentity, setIsSettingUpIdentity] = useState(false);
   const [showAvatarPickerModal, setShowAvatarPickerModal] = useState(false);
+
+  // Element 6: Activity Detail Modal & Filter state
+  const [selectedActivity, setSelectedActivity] = useState<ActivityItem | null>(null);
+
+  // Settings & Logout state
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
+
+  const handleConfirmLogout = () => {
+    setShowLogoutModal(false);
+    setIsLoggedOut(true);
+    setTimeout(() => {
+      setIsLoggedOut(false);
+      setCurrentTab("dashboard");
+    }, 2500);
+  };
+
+  const handleExportCSV = () => {
+    const headers = [
+      "ID",
+      "Type",
+      "Title",
+      "Subtitle",
+      "Amount",
+      "Token",
+      "Tags",
+      "Note",
+      "Timestamp",
+      "Recipient",
+      "Multiplier",
+      "TxHash",
+    ];
+    const rows = mockActivities.map((a) => [
+      a.id,
+      a.type,
+      `"${a.title}"`,
+      `"${a.subtitle}"`,
+      a.amount,
+      a.tokenSymbol,
+      `"${(a.tags || []).join("; ")}"`,
+      `"${a.note || ""}"`,
+      `"${a.timestamp || ""}"`,
+      `"${a.recipient || ""}"`,
+      `"${a.multiplier || ""}"`,
+      `"${a.txHash || ""}"`,
+    ]);
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute(
+      "download",
+      `alloy_dividends_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   // Harvest Studio interactive state
   const [selectedStock, setSelectedStock] = useState<"AAPLc" | "NVDAc" | "COINc">("AAPLc");
@@ -260,7 +378,7 @@ export default function Home() {
                 onSelectTab={setActiveFilterTab}
                 rightAction={
                   <button
-                    onClick={() => alert("Exporting CSV...")}
+                    onClick={handleExportCSV}
                     className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-xs font-normal text-neutral-700 flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <FileText className="w-3.5 h-3.5 text-neutral-500" />
@@ -270,8 +388,12 @@ export default function Home() {
               />
 
               <div className="divide-y divide-neutral-100">
-                {mockActivities.map((act) => (
-                  <ActivityRow key={act.id} activity={act} />
+                {mockActivities.slice(0, 3).map((act) => (
+                  <ActivityRow
+                    key={act.id}
+                    activity={act}
+                    onClick={(item) => setSelectedActivity(item)}
+                  />
                 ))}
               </div>
 
@@ -469,12 +591,12 @@ export default function Home() {
                     Activities Ledger
                   </h2>
                   <p className="text-xs text-neutral-400 font-normal">
-                    Private dividend payouts, stealth announcements, and swaps
+                    Private dividend payouts, stealth announcements, and swaps on Base
                   </p>
                 </div>
 
                 <button
-                  onClick={() => alert("Exporting CSV...")}
+                  onClick={handleExportCSV}
                   className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-xs font-normal text-neutral-700 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <FileText className="w-3.5 h-3.5 text-neutral-500" />
@@ -487,26 +609,95 @@ export default function Home() {
                 onSelectTab={setActiveFilterTab}
               />
 
-              <div className="space-y-4 pt-2">
-                <div>
-                  <div className="text-[11px] font-heading font-medium uppercase tracking-wider text-neutral-400 px-2 py-1">
-                    Today
-                  </div>
-                  <div className="divide-y divide-neutral-100">
-                    <ActivityRow activity={mockActivities[0]} />
-                    <ActivityRow activity={mockActivities[1]} />
-                  </div>
-                </div>
+              {(() => {
+                const filtered = mockActivities.filter((act) => {
+                  if (activeFilterTab === "incoming")
+                    return act.type === "incoming" || act.type === "harvest";
+                  if (activeFilterTab === "outgoing")
+                    return act.type === "outgoing";
+                  if (activeFilterTab === "gifts")
+                    return (
+                      act.tags?.some((t) => t.includes("gift")) ||
+                      act.tags?.some((t) => t.includes("stealth receipt"))
+                    );
+                  return true;
+                });
 
-                <div>
-                  <div className="text-[11px] font-heading font-medium uppercase tracking-wider text-neutral-400 px-2 py-1">
-                    Yesterday
+                const todayItems = filtered.filter((a) =>
+                  a.timestamp?.toLowerCase().includes("today")
+                );
+                const yesterdayItems = filtered.filter((a) =>
+                  a.timestamp?.toLowerCase().includes("yesterday")
+                );
+                const earlierItems = filtered.filter(
+                  (a) =>
+                    !a.timestamp?.toLowerCase().includes("today") &&
+                    !a.timestamp?.toLowerCase().includes("yesterday")
+                );
+
+                if (filtered.length === 0) {
+                  return (
+                    <div className="py-12 text-center text-neutral-400 text-xs font-normal">
+                      No activities found for this filter tab.
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="space-y-4 pt-2">
+                    {todayItems.length > 0 && (
+                      <div>
+                        <div className="text-[11px] font-heading font-medium uppercase tracking-wider text-neutral-400 px-2 py-1">
+                          Today
+                        </div>
+                        <div className="divide-y divide-neutral-100">
+                          {todayItems.map((act) => (
+                            <ActivityRow
+                              key={act.id}
+                              activity={act}
+                              onClick={(item) => setSelectedActivity(item)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {yesterdayItems.length > 0 && (
+                      <div>
+                        <div className="text-[11px] font-heading font-medium uppercase tracking-wider text-neutral-400 px-2 py-1">
+                          Yesterday
+                        </div>
+                        <div className="divide-y divide-neutral-100">
+                          {yesterdayItems.map((act) => (
+                            <ActivityRow
+                              key={act.id}
+                              activity={act}
+                              onClick={(item) => setSelectedActivity(item)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {earlierItems.length > 0 && (
+                      <div>
+                        <div className="text-[11px] font-heading font-medium uppercase tracking-wider text-neutral-400 px-2 py-1">
+                          Previous
+                        </div>
+                        <div className="divide-y divide-neutral-100">
+                          {earlierItems.map((act) => (
+                            <ActivityRow
+                              key={act.id}
+                              activity={act}
+                              onClick={(item) => setSelectedActivity(item)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="divide-y divide-neutral-100">
-                    <ActivityRow activity={mockActivities[2]} />
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
           </div>
         );
@@ -588,7 +779,15 @@ export default function Home() {
       case "settings":
         return (
           <div className="space-y-6">
-            {/* Profile & Identity Card (Element 4) */}
+            {/* Logged Out Banner Notification if triggered */}
+            {isLoggedOut && (
+              <div className="p-4 rounded-2xl bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626] text-xs font-medium flex items-center justify-between animate-in fade-in">
+                <span>You have been disconnected from Base Sepolia. Reconnecting...</span>
+                <span className="w-2 h-2 rounded-full bg-[#EF4444] animate-ping" />
+              </div>
+            )}
+
+            {/* Profile & Identity Card (Element 4 & 5) */}
             <ProfileAvatarCard
               mode="settings"
               profile={{
@@ -602,11 +801,144 @@ export default function Home() {
               onEditUsername={() => setIsSettingUpIdentity(true)}
             />
 
-            {/* Network & Privacy */}
+            {/* 1. Preferences Section (Matching inspo Screenshot 002947) */}
+            <div className="space-y-2">
+              <div className="text-xs font-heading font-medium text-neutral-400 uppercase tracking-wider px-2">
+                Preferences
+              </div>
+
+              <div className="bg-white rounded-3xl border border-neutral-200/80 p-2 shadow-xs">
+                <button
+                  type="button"
+                  onClick={() => alert("Currency picker will open in Element 7!")}
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-neutral-50/90 transition-colors cursor-pointer text-left"
+                >
+                  <div className="flex items-center gap-3.5">
+                    {/* Purple $ Circle Icon */}
+                    <div className="w-10 h-10 rounded-full bg-[#A855F7] text-white flex items-center justify-center font-bold text-base shadow-xs shrink-0">
+                      <DollarSign className="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <div className="font-heading font-medium text-neutral-900 text-sm">
+                        Currency
+                      </div>
+                      <div className="text-xs text-neutral-400 font-normal">
+                        Default display currency
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <span className="font-medium text-xs text-neutral-700 bg-neutral-100 px-2.5 py-1 rounded-lg">
+                      USD
+                    </span>
+                    <MoreVertical className="w-4 h-4" />
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Account Section (Matching inspo Screenshot 002947 with Logout button!) */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1 text-xs font-heading font-medium text-neutral-400 uppercase tracking-wider px-2">
+                <span>Account</span>
+                <Info className="w-3.5 h-3.5 text-neutral-400" />
+              </div>
+
+              <div className="bg-white rounded-3xl border border-neutral-200/80 p-2 shadow-xs divide-y divide-neutral-100">
+                {/* Connected Wallets Row */}
+                <button
+                  type="button"
+                  onClick={() => alert("Connected wallets modal will open in Element 7!")}
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-neutral-50/90 transition-colors cursor-pointer text-left"
+                >
+                  <div className="flex items-center gap-3.5">
+                    {/* Amber / Yellow Wallet Circle Icon */}
+                    <div className="w-10 h-10 rounded-full bg-[#F59E0B] text-white flex items-center justify-center shadow-xs shrink-0">
+                      <Wallet className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="font-heading font-medium text-neutral-900 text-sm">
+                        Connected Wallets
+                      </div>
+                      <div className="text-xs text-neutral-400 font-normal font-mono">
+                        Base Sepolia (0xD568...14eC)
+                      </div>
+                    </div>
+                  </div>
+
+                  <MoreVertical className="w-4 h-4 text-neutral-400" />
+                </button>
+
+                {/* Logout Row (Coral Red Circle matching inspo Screenshot 002947) */}
+                <button
+                  type="button"
+                  onClick={() => setShowLogoutModal(true)}
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-[#FEF2F2]/60 transition-colors cursor-pointer text-left group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    {/* Coral Red Circle Icon with LogOut */}
+                    <div className="w-10 h-10 rounded-full bg-[#EF4444] text-white flex items-center justify-center shadow-xs shrink-0 transition-transform group-hover:scale-105">
+                      <LogOut className="w-5 h-5 ml-0.5" />
+                    </div>
+                    <div>
+                      <div className="font-heading font-medium text-neutral-900 group-hover:text-[#EF4444] text-sm transition-colors">
+                        Logout
+                      </div>
+                      <div className="text-xs text-neutral-400 font-normal">
+                        Disconnect active wallet session
+                      </div>
+                    </div>
+                  </div>
+
+                  <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-[#EF4444] group-hover:translate-x-0.5 transition-all" />
+                </button>
+              </div>
+            </div>
+
+            {/* 3. Links Section (Matching inspo Screenshot 003851) */}
+            <div className="space-y-2">
+              <div className="text-xs font-heading font-medium text-neutral-400 uppercase tracking-wider px-2">
+                Links
+              </div>
+
+              <div className="bg-white rounded-3xl border border-neutral-200/80 p-2 shadow-xs divide-y divide-neutral-100">
+                <a
+                  href="https://docs.base.org"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-neutral-50/90 transition-colors cursor-pointer text-left group"
+                >
+                  <span className="font-heading font-medium text-neutral-900 text-sm">
+                    Docs
+                  </span>
+                  <ExternalLink className="w-4 h-4 text-neutral-400 group-hover:text-neutral-700 transition-colors" />
+                </a>
+
+                <a
+                  href="https://x.com/base"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-neutral-50/90 transition-colors cursor-pointer text-left group"
+                >
+                  <span className="font-heading font-medium text-neutral-900 text-sm">
+                    X (Twitter)
+                  </span>
+                  <ExternalLink className="w-4 h-4 text-neutral-400 group-hover:text-neutral-700 transition-colors" />
+                </a>
+              </div>
+            </div>
+
+            {/* 4. Network & Smart Contracts Section */}
             <div className="bg-white rounded-3xl border border-neutral-200/80 p-6 shadow-xs space-y-4">
-              <h3 className="font-heading font-medium text-base text-neutral-900">
-                Network & Smart Contracts
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-heading font-medium text-base text-neutral-900">
+                  Network &amp; Smart Contracts
+                </h3>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#E0F2FE] text-[#007FFF] font-normal border border-[#BAE6FD]">
+                  Chain ID: 84532
+                </span>
+              </div>
 
               <div className="space-y-2">
                 {[
@@ -628,7 +960,7 @@ export default function Home() {
                     className="flex items-center justify-between p-3 rounded-2xl bg-[#F9FAFB] border border-neutral-100 text-xs"
                   >
                     <div>
-                      <div className="font-medium text-neutral-800">{contract.name}</div>
+                      <div className="font-medium text-neutral-800 font-heading">{contract.name}</div>
                       <div className="font-mono text-[11px] text-neutral-400">
                         {contract.addr.slice(0, 10)}...{contract.addr.slice(-8)}
                       </div>
@@ -744,6 +1076,20 @@ export default function Home() {
             }}
           />
         )}
+
+        {/* Element 6: Transaction Detail Modal in Mobile Preview */}
+        <TxDetailModal
+          isOpen={!!selectedActivity}
+          activity={selectedActivity}
+          onClose={() => setSelectedActivity(null)}
+        />
+
+        {/* Logout Confirmation Modal in Mobile Preview */}
+        <LogoutModal
+          isOpen={showLogoutModal}
+          onClose={() => setShowLogoutModal(false)}
+          onConfirmLogout={handleConfirmLogout}
+        />
       </div>
     );
   }
@@ -777,6 +1123,20 @@ export default function Home() {
           }}
         />
       )}
+
+      {/* Element 6: Transaction Detail Modal in Responsive Layout */}
+      <TxDetailModal
+        isOpen={!!selectedActivity}
+        activity={selectedActivity}
+        onClose={() => setSelectedActivity(null)}
+      />
+
+      {/* Logout Confirmation Modal in Responsive Layout */}
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirmLogout={handleConfirmLogout}
+      />
     </>
   );
 }

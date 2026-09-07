@@ -198,12 +198,16 @@ All modals use centered rounded cards (`rounded-3xl`), pure white backgrounds, s
    - *"Surprise me!"* dice button pill with random color + emoji pairing & wiggle animation.
    - Modal component ([`EmojiColorPickerModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/profile/EmojiColorPickerModal.tsx)) wired to Onboarding avatar setup and Settings.
 
-6. **Element 6: Activity & Transaction Rows** [Next]
-   - Circular token/user avatar with directional badge (green down-arrow for incoming harvests).
-   - Bold amount display (`+100 USDC` in `#10B981`, or meme coins).
-   - Micro-metadata pills (`personal`, `stealth payout`, BaseScan link).
+6. **Element 6: Activity & Transaction Rows** [Completed]
+   - Circular token/user avatar with directional badge (green down-arrow for incoming harvests, blue swap for memes, purple for stealth).
+   - Bold amount display formatted in vibrant Emerald Green (`+250.00 USDC` in `#10B981`, `+50.0 CLANKER`).
+   - Micro-metadata tag pills: memo tags (`personal`, `stealth payout`, `harvest`) and note preview pills.
+   - Grouped date dividers: `TODAY`, `YESTERDAY`, `PREVIOUS`.
+   - Real-time tab filtering: `All`, `Incoming`, `Outgoing`, `Gifts`.
+   - Functional `Export CSV` downloader.
+   - Interactive transaction detail receipt modal ([`TxDetailModal.tsx`](file:///c:/Users/PC/Desktop/Coding/Alloy/app/components/modals/TxDetailModal.tsx)) with BaseScan link and ERC-5564 stealth verification.
 
-7. **Element 7: Modals & Dialogs**
+7. **Element 7: Modals & Dialogs** [Next]
    - Currency Picker modal with search bar, country pills, and green checkmark.
    - Connected Wallets modal with address copy, `Export ->` pill, and privacy explainer.
    - QR Code share modal with clean framed SVG QR code and handle pill.

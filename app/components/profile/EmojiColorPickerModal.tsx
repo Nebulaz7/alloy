@@ -62,22 +62,25 @@ export const EmojiColorPickerModal: React.FC<EmojiColorPickerProps> = ({
     const randomEmoji = PLAYFUL_EMOJIS[Math.floor(Math.random() * PLAYFUL_EMOJIS.length)];
     setSelectedColor(randomColor);
     setSelectedEmoji(randomEmoji);
-    onSave?.(randomEmoji, randomColor);
     setTimeout(() => setIsWiggling(false), 500);
   };
 
   const handleSelectColor = (hex: string) => {
     setSelectedColor(hex);
-    onSave?.(selectedEmoji, hex);
   };
 
   const handleSelectEmoji = (emoji: string) => {
     setSelectedEmoji(emoji);
-    onSave?.(emoji, selectedColor);
   };
 
-  const handleSaveAndClose = () => {
+  const handleSave = () => {
     onSave?.(selectedEmoji, selectedColor);
+    onClose?.();
+  };
+
+  const handleCancel = () => {
+    setSelectedEmoji(initialEmoji);
+    setSelectedColor(initialColor);
     onClose?.();
   };
 
@@ -98,7 +101,7 @@ export const EmojiColorPickerModal: React.FC<EmojiColorPickerProps> = ({
           </h2>
 
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             aria-label="Close modal"
             className="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-500 hover:text-neutral-800 transition-colors cursor-pointer"
           >
@@ -196,13 +199,24 @@ export const EmojiColorPickerModal: React.FC<EmojiColorPickerProps> = ({
           </div>
         </div>
 
-        {/* Save / Apply Button (Rectangular with rounded edges) */}
-        <div className="pt-2 shrink-0">
+        {/* Action Buttons: Cancel and Save Avatar */}
+        <div className="pt-2 shrink-0 flex items-center gap-2.5">
           <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            onClick={handleCancel}
+            className="flex-1 justify-center text-sm sm:text-base rounded-2xl"
+          >
+            Cancel
+          </Button>
+
+          <Button
+            type="button"
             variant="primary"
             size="lg"
-            onClick={handleSaveAndClose}
-            className="w-full justify-center text-sm sm:text-base rounded-2xl"
+            onClick={handleSave}
+            className="flex-1 justify-center text-sm sm:text-base rounded-2xl"
           >
             Save Avatar
           </Button>
