@@ -56,12 +56,12 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button
       disabled={disabled || isLoading}
-      className={`inline-flex items-center justify-center transition-all duration-150 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#007FFF] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={`inline-flex flex-row items-center justify-center transition-all duration-150 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#007FFF] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
       {...props}
     >
       {isLoading ? (
         <svg
-          className="animate-spin -ml-1 mr-2 h-4 w-4 text-current"
+          className="animate-spin -ml-1 mr-2 h-4 w-4 text-current shrink-0"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -81,13 +81,15 @@ export const Button: React.FC<ButtonProps> = ({
           />
         </svg>
       ) : leftIcon ? (
-        <span className="shrink-0">{leftIcon}</span>
+        <span className="shrink-0 inline-flex items-center">{leftIcon}</span>
       ) : null}
 
-      <span>{children}</span>
+      <span className="inline-flex flex-row items-center justify-center gap-1.5 shrink-0">
+        {children}
+      </span>
 
       {!isLoading && rightIcon ? (
-        <span className="shrink-0">{rightIcon}</span>
+        <span className="shrink-0 inline-flex items-center">{rightIcon}</span>
       ) : null}
     </button>
   );

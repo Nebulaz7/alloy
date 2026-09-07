@@ -273,18 +273,19 @@ export default function ActivitiesPage() {
                 variant="outline"
                 size="sm"
                 onClick={handleExportCSV}
-                className="cursor-pointer gap-1.5 text-xs rounded-2xl"
+                className="cursor-pointer text-xs rounded-2xl"
+                leftIcon={
+                  copiedCsv ? (
+                    <Check className="w-3.5 h-3.5 text-[#10B981]" />
+                  ) : (
+                    <Download className="w-3.5 h-3.5 text-neutral-500" />
+                  )
+                }
               >
                 {copiedCsv ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-[#10B981]" />
-                    <span className="text-[#10B981]">Downloaded</span>
-                  </>
+                  <span className="text-[#10B981]">Downloaded</span>
                 ) : (
-                  <>
-                    <Download className="w-3.5 h-3.5 text-neutral-500" />
-                    <span>Export CSV</span>
-                  </>
+                  <span>Export CSV</span>
                 )}
               </Button>
 
@@ -292,9 +293,9 @@ export default function ActivitiesPage() {
                 variant="primary"
                 size="sm"
                 onClick={() => router.push("/harvest")}
-                className="cursor-pointer gap-1.5 text-xs rounded-2xl"
+                className="cursor-pointer text-xs rounded-2xl"
+                leftIcon={<Repeat className="w-3.5 h-3.5" />}
               >
-                <Repeat className="w-3.5 h-3.5" />
                 <span>Harvest</span>
               </Button>
             </div>
@@ -467,9 +468,9 @@ export default function ActivitiesPage() {
                       variant="primary"
                       size="sm"
                       onClick={() => router.push("/harvest")}
-                      className="cursor-pointer gap-1.5"
+                      className="cursor-pointer"
+                      leftIcon={<Repeat className="w-3.5 h-3.5" />}
                     >
-                      <Repeat className="w-3.5 h-3.5" />
                       <span>Harvest Dividends</span>
                     </Button>
 
@@ -477,9 +478,9 @@ export default function ActivitiesPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => setShowSimModal(true)}
-                      className="cursor-pointer gap-1.5"
+                      className="cursor-pointer"
+                      leftIcon={<Sparkles className="w-3.5 h-3.5 text-[#007FFF]" />}
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-[#007FFF]" />
                       <span>Simulate Payout</span>
                     </Button>
                   </>
@@ -512,9 +513,9 @@ export default function ActivitiesPage() {
             variant="outline"
             size="sm"
             onClick={() => setShowSimModal(true)}
-            className="shrink-0 cursor-pointer text-xs gap-1.5 rounded-2xl bg-white hover:bg-neutral-50"
+            className="shrink-0 cursor-pointer text-xs rounded-2xl bg-white hover:bg-neutral-50"
+            leftIcon={<Sparkles className="w-3.5 h-3.5 text-[#007FFF]" />}
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#007FFF]" />
             <span>Simulate Corporate Payout</span>
           </Button>
         </section>
