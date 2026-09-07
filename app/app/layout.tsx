@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { Google_Sans, Comic_Relief } from "next/font/google";
+import { Comic_Relief, Google_Sans } from "next/font/google";
 import "./globals.css";
 
-const googleSans = Google_Sans({
+const comicRelief = Comic_Relief({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
-const comicRelief = Comic_Relief({
+const googleSans = Google_Sans({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${googleSans.variable} ${comicRelief.variable} h-full antialiased`}
+      className={`${comicRelief.variable} ${googleSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
