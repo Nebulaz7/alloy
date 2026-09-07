@@ -148,16 +148,9 @@ export const InteractiveNametagCard: React.FC<InteractiveNametagCardProps> = ({
         {/* Center / Bottom: The Formatted Handle Preview */}
         <div className="space-y-1">
           <div className="text-xs sm:text-sm font-normal uppercase tracking-wider opacity-80">
-            Shareable Dividend Link
+            Your Basename Handle
           </div>
-          <div className="flex flex-wrap items-baseline gap-1 text-xl sm:text-2xl font-heading tracking-tight break-all">
-            <span
-              className={
-                status === "available" ? "text-white/80 font-normal" : "text-neutral-400"
-              }
-            >
-              alloy.base.eth/
-            </span>
+          <div className="flex flex-wrap items-baseline gap-0.5 text-2xl sm:text-3xl font-heading tracking-tight break-all">
             <span
               className={`font-medium ${
                 status === "available"
@@ -168,6 +161,13 @@ export const InteractiveNametagCard: React.FC<InteractiveNametagCardProps> = ({
               }`}
             >
               {sanitized || "yourname"}
+            </span>
+            <span
+              className={
+                status === "available" ? "text-white/80 font-normal" : "text-neutral-400 font-normal"
+              }
+            >
+              .base.eth
             </span>
           </div>
         </div>
@@ -185,7 +185,7 @@ export const InteractiveNametagCard: React.FC<InteractiveNametagCardProps> = ({
         {status === "taken" && (
           <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-rose-100 text-rose-700 text-xs font-medium border border-rose-200 shadow-2xs">
             <X className="w-3.5 h-3.5" />
-            <span>&quot;{sanitized}&quot; is already claimed on Base. Try another!</span>
+            <span>&quot;{sanitized}.base.eth&quot; is already claimed on Base. Try another!</span>
           </div>
         )}
 
@@ -208,13 +208,10 @@ export const InteractiveNametagCard: React.FC<InteractiveNametagCardProps> = ({
           htmlFor="handle-input"
           className="block text-xs font-heading font-medium text-neutral-700 uppercase tracking-wider"
         >
-          Choose Handle
+          Choose Basename
         </label>
 
         <div className="relative flex items-center">
-          <span className="absolute left-3.5 text-neutral-400 font-mono text-sm select-none">
-            @
-          </span>
           <input
             id="handle-input"
             type="text"
@@ -222,13 +219,16 @@ export const InteractiveNametagCard: React.FC<InteractiveNametagCardProps> = ({
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="e.g. nebula, bob, alex"
             maxLength={20}
-            className="w-full pl-8 pr-10 py-2.5 rounded-xl border border-neutral-200 bg-[#F9FAFB] text-neutral-900 text-sm focus:outline-none focus:border-[#007FFF] focus:bg-white transition-all font-normal placeholder:text-neutral-400"
+            className="w-full pl-3.5 pr-24 py-2.5 rounded-xl border border-neutral-200 bg-[#F9FAFB] text-neutral-900 text-sm focus:outline-none focus:border-[#007FFF] focus:bg-white transition-all font-normal placeholder:text-neutral-400"
           />
+          <span className="absolute right-9 text-neutral-400 font-mono text-xs select-none pointer-events-none">
+            .base.eth
+          </span>
           {inputVal && (
             <button
               onClick={() => setInputVal("")}
               aria-label="Clear input"
-              className="absolute right-3 text-neutral-400 hover:text-neutral-600 p-1 cursor-pointer"
+              className="absolute right-2.5 text-neutral-400 hover:text-neutral-600 p-1 cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -244,7 +244,7 @@ export const InteractiveNametagCard: React.FC<InteractiveNametagCardProps> = ({
               onClick={() => setInputVal(sug)}
               className="px-2.5 py-1 rounded-lg text-xs bg-neutral-100 hover:bg-[#E0F2FE] hover:text-[#007FFF] text-neutral-600 transition-colors cursor-pointer font-normal"
             >
-              @{sug}
+              {sug}.base.eth
             </button>
           ))}
         </div>

@@ -81,11 +81,11 @@ export default function Home() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [previewMode, setPreviewMode] = useState<"responsive" | "mobile">("responsive");
 
-  // Element 4: Profile & Nametag state
+  // Element 4: Profile & Nametag state (Full Screen Mode)
   const [username, setUsername] = useState("nebula");
   const [avatarEmoji, setAvatarEmoji] = useState("🎧");
   const [avatarBg, setAvatarBg] = useState("#18181B");
-  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [isSettingUpIdentity, setIsSettingUpIdentity] = useState(false);
 
   // Harvest Studio interactive state
   const [selectedStock, setSelectedStock] = useState<"AAPLc" | "NVDAc" | "COINc">("AAPLc");
@@ -133,7 +133,7 @@ export default function Home() {
                     Element 4 Active: Profile & Interactive Nametag Card
                   </h2>
                   <p className="text-xs text-neutral-500 font-normal">
-                    Dynamic Azure Blue card, winking mascot stamp & Basename claiming
+                    Full-screen identity setup, username.base.eth format & dynamic Azure card
                   </p>
                 </div>
               </div>
@@ -141,11 +141,11 @@ export default function Home() {
               {/* Controls */}
               <div className="flex flex-wrap items-center gap-2">
                 <button
-                  onClick={() => setShowClaimModal(true)}
+                  onClick={() => setIsSettingUpIdentity(true)}
                   className="px-3 py-1.5 rounded-xl text-xs font-medium bg-[#007FFF] hover:bg-[#0066FF] text-white shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Claim Handle</span>
+                  <span>Claim Basename</span>
                 </button>
 
                 <button
@@ -211,11 +211,11 @@ export default function Home() {
                   Basename Identity Card
                 </span>
                 <button
-                  onClick={() => setShowClaimModal(true)}
+                  onClick={() => setIsSettingUpIdentity(true)}
                   className="text-xs text-[#007FFF] hover:text-[#0066FF] font-normal cursor-pointer flex items-center gap-1"
                 >
                   <Sparkles className="w-3 h-3" />
-                  <span>Claim / Edit Handle</span>
+                  <span>Claim / Edit Basename</span>
                 </button>
               </div>
 
@@ -585,7 +585,7 @@ export default function Home() {
                 address: "0xD5687794c8E1b69F477911Df56170679CB6414eC",
                 isVerified: true,
               }}
-              onEditAvatar={() => setShowClaimModal(true)}
+              onEditAvatar={() => setIsSettingUpIdentity(true)}
             />
 
             {/* Network & Privacy */}
@@ -637,6 +637,53 @@ export default function Home() {
     }
   };
 
+  // Full-Screen Identity Setup (Dedicated view matching Pivy inspo, NO POPUP)
+  if (isSettingUpIdentity) {
+    if (previewMode === "mobile") {
+      return (
+        <div className="min-h-screen bg-neutral-200 flex flex-col items-center justify-center p-4">
+          <div className="mb-4 flex items-center gap-3 bg-white px-4 py-2 rounded-2xl shadow-xs border border-neutral-300">
+            <span className="text-xs font-normal text-neutral-600">
+              Simulated Mobile Viewport (Full-Screen Identity Setup)
+            </span>
+            <button
+              onClick={() => setPreviewMode("responsive")}
+              className="text-xs px-3 py-1 rounded-xl bg-[#007FFF] text-white font-normal hover:bg-[#0066FF] cursor-pointer transition-colors"
+            >
+              Switch to Full Responsive
+            </button>
+          </div>
+
+          <div className="w-[390px] h-[820px] bg-[#F9FAFB] rounded-[48px] border-[10px] border-neutral-900 shadow-2xl overflow-hidden flex flex-col relative">
+            <NametagClaimFlow
+              initialUsername={username}
+              onBack={() => setIsSettingUpIdentity(false)}
+              onComplete={(newProfile) => {
+                setUsername(newProfile.username);
+                setAvatarEmoji(newProfile.avatarEmoji);
+                setAvatarBg(newProfile.avatarBg);
+                setIsSettingUpIdentity(false);
+              }}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <NametagClaimFlow
+        initialUsername={username}
+        onBack={() => setIsSettingUpIdentity(false)}
+        onComplete={(newProfile) => {
+          setUsername(newProfile.username);
+          setAvatarEmoji(newProfile.avatarEmoji);
+          setAvatarBg(newProfile.avatarBg);
+          setIsSettingUpIdentity(false);
+        }}
+      />
+    );
+  }
+
   // If previewMode is "mobile", render an interactive simulated phone frame on desktop so the user can easily test the mobile dock!
   if (previewMode === "mobile") {
     return (
@@ -665,69 +712,19 @@ export default function Home() {
             {renderTabContent()}
           </AppShell>
         </div>
-
-        {/* Claim Modal in Mobile Preview */}
-        {showClaimModal && (
-          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-            <div className="relative w-full max-w-xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-neutral-200">
-              <button
-                onClick={() => setShowClaimModal(false)}
-                className="absolute top-5 right-5 w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition-colors cursor-pointer"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <NametagClaimFlow
-                initialUsername={username}
-                onComplete={(newProfile) => {
-                  setUsername(newProfile.username);
-                  setAvatarEmoji(newProfile.avatarEmoji);
-                  setAvatarBg(newProfile.avatarBg);
-                  setShowClaimModal(false);
-                }}
-              />
-            </div>
-          </div>
-        )}
       </div>
     );
   }
 
   // Default Responsive Layout (Desktop Sidebar on screens >= md, Mobile Floating Dock on screens < md)
   return (
-    <>
-      <AppShell
-        activeTab={currentTab}
-        onTabChange={setCurrentTab}
-        showBetaLogo={showBetaLogo}
-        connectedHandle={`${username}.base.eth`}
-      >
-        {renderTabContent()}
-      </AppShell>
-
-      {/* Claim Modal in Responsive Mode */}
-      {showClaimModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="relative w-full max-w-xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-neutral-200">
-            <button
-              onClick={() => setShowClaimModal(false)}
-              className="absolute top-5 right-5 w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition-colors cursor-pointer"
-              aria-label="Close modal"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <NametagClaimFlow
-              initialUsername={username}
-              onComplete={(newProfile) => {
-                setUsername(newProfile.username);
-                setAvatarEmoji(newProfile.avatarEmoji);
-                setAvatarBg(newProfile.avatarBg);
-                setShowClaimModal(false);
-              }}
-            />
-          </div>
-        </div>
-      )}
-    </>
+    <AppShell
+      activeTab={currentTab}
+      onTabChange={setCurrentTab}
+      showBetaLogo={showBetaLogo}
+      connectedHandle={`${username}.base.eth`}
+    >
+      {renderTabContent()}
+    </AppShell>
   );
 }

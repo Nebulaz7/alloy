@@ -187,9 +187,10 @@ All modals use centered rounded cards (`rounded-3xl`), pure white backgrounds, s
    - **Mobile Floating Bottom Dock**: Detached floating pill bar with active tab highlighted by a soft Azure Blue squircle (`#E0F2FE`) and solid Azure Blue icon (`#007FFF`).
 
 4. **Element 4: Profile & Interactive Nametag Card** [Completed]
-   - Onboarding nametag card (`alloy.base.eth/username` or `username.base.eth`).
-   - Dynamic activation: Transitions to solid Azure Blue (`bg-[#007FFF]`, white text) with an *"Available!"* checkmark pill.
-   - Profile avatar preview with 3D playful emoji icon & color badge.
+   - Dedicated **Full-Screen Setup** (no popup overlays), matching Pivy inspo with top back `<` arrow and Base Sepolia network badge.
+   - Formatted strictly as **`username.base.eth`** (e.g. `nebula.base.eth`).
+   - Dynamic activation: Transitions to solid Azure Blue (`bg-[#007FFF]`, white text) with winking mascot stamp and an *"Available!"* checkmark pill.
+   - Profile avatar preview with 3D playful emoji icon & Basename verification badge.
 
 5. **Element 5: Avatar Customization System** [Next]
    - 10 solid playful color swatches with active selection ring.

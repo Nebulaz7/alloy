@@ -169,7 +169,7 @@ export const ProfileAvatarCard: React.FC<ProfileAvatarCardProps> = ({
 
           <div className="space-y-0.5">
             <div className="font-heading font-medium text-base text-neutral-900">
-              @{profile.username}
+              {profile.username}.base.eth
             </div>
             <div className="text-xs text-neutral-400 font-normal font-mono flex items-center gap-1.5">
               <span>
