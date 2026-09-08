@@ -30,6 +30,7 @@ import { useProfile } from "@/lib/store/profileStore";
 import { openReownModal } from "@/lib/wagmi";
 import { DividendSimModal } from "@/components/modals/DividendSimModal";
 import { EmojiColorPickerModal } from "@/components/profile/EmojiColorPickerModal";
+import { StealthInboxModal } from "@/components/modals/StealthInboxModal";
 import { SupportedStockSymbol, ALLOY_ADDRESSES } from "@/lib/contracts/addresses";
 
 type DestinationToken = "USDC" | "cNGN" | "CLANKER" | "HIGHER" | "DEGEN";
@@ -111,6 +112,7 @@ export default function HarvestPage() {
   // Modals & Feedback
   const [showSimModal, setShowSimModal] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [showStealthInbox, setShowStealthInbox] = useState(false);
   const [successReceipt, setSuccessReceipt] = useState<{
     txHash: string;
     stock: string;
@@ -510,13 +512,23 @@ export default function HarvestPage() {
 
         {/* 4. Step 3: Recipient & Stealth Rail Configuration */}
         <section className="bg-white rounded-3xl border border-neutral-200/80 p-5 sm:p-6 shadow-xs space-y-4">
-          <div>
-            <span className="text-xs font-heading font-medium text-[#007FFF] uppercase tracking-wider">
-              Step 3
-            </span>
-            <h3 className="text-base sm:text-lg font-heading font-medium text-neutral-900">
-              Select Payout Recipient & Privacy
-            </h3>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <span className="text-xs font-heading font-medium text-[#007FFF] uppercase tracking-wider">
+                Step 3
+              </span>
+              <h3 className="text-base sm:text-lg font-heading font-medium text-neutral-900">
+                Select Payout Recipient & Privacy
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowStealthInbox(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#007FFF]/10 hover:bg-[#007FFF]/20 text-[#007FFF] text-xs font-medium transition-colors cursor-pointer"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Stealth Inbox</span>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -785,6 +797,11 @@ export default function HarvestPage() {
           }}
         />
       )}
+
+      <StealthInboxModal
+        isOpen={showStealthInbox}
+        onClose={() => setShowStealthInbox(false)}
+      />
     </AppShell>
   );
 }

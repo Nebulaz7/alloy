@@ -33,10 +33,8 @@ export const BASENAME_RESOLVER_ABI = parseAbi([
 ]);
 
 export const STEALTH_RELAYER_ABI = parseAbi([
-  "function sweepWithPermit(address token, address stealthAddress, address recipient, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external returns (uint256 netAmount)",
-  "function sweepERC20(address token, address stealthAddress, address recipient, uint256 amount) external returns (uint256 netAmount)",
-  "function relayerFeeBps() view returns (uint256)",
-  "event StealthSweepRelayed(address indexed token, address indexed stealthAddress, address indexed recipient, uint256 grossAmount, uint256 feeAmount)",
+  "function sweepWithPermit(address token, address stealthAddress, address destination, uint256 amount, uint256 relayerFee, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external",
+  "event StealthFundsSwept(address indexed token, address indexed stealthAddress, address indexed destination, uint256 amount, uint256 feePaid, address relayer)",
 ]);
 
 export const ERC6538_REGISTRY_ABI = parseAbi([

@@ -22,6 +22,7 @@ import { NavTabId } from "@/components/navigation/Sidebar";
 import { Button } from "@/components/ui/Button";
 import { ActivityRow, ActivityItem } from "@/components/ui/ActivityRow";
 import { DividendAnalyticsChart, TimeRange } from "@/components/analytics/DividendAnalyticsChart";
+import { StealthInboxCard } from "@/components/stealth/StealthInboxCard";
 import { TxDetailModal } from "@/components/modals/TxDetailModal";
 import { DividendSimModal } from "@/components/modals/DividendSimModal";
 import { EmojiColorPickerModal } from "@/components/profile/EmojiColorPickerModal";
@@ -244,7 +245,12 @@ export default function ActivitiesPage() {
           </div>
         </section>
 
-        {/* 4. Filter & Search Controls Card */}
+        {/* 4. Stealth Inbox & 0-ETH Gasless Sweeper */}
+        <section id="stealth-inbox">
+          <StealthInboxCard onPaymentSwept={() => refetchStocks()} />
+        </section>
+
+        {/* 5. Filter & Search Controls Card */}
         <section className="p-4 sm:p-5 rounded-3xl bg-white border border-neutral-200/80 shadow-xs space-y-3.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             {/* Search Input Box */}
