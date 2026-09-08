@@ -14,6 +14,7 @@ export interface HarvestParams {
   recipient: string; // "self", "0x...", "bob.base.eth", or "st:eth:..."
   stealthMetaAddress?: string;
   minAmountOut?: string;
+  estimatedAmount?: string;
 }
 
 export function useHarvest() {
@@ -85,25 +86,37 @@ export function useHarvest() {
 
       // 2. Dispatch to specific Router function
       if (params.destinationCurrency === "USDC" || params.destinationCurrency === "cNGN") {
+        const targetToken =
+          params.destinationCurrency === "USDC"
+            ? ALLOY_ADDRESSES.contracts.Mock_USDC
+            : ALLOY_ADDRESSES.contracts.Mock_cNGN;
+
         if (stealthDetails) {
+          const metadata = `0x${stealthDetails.viewTag.toString(16).padStart(2, "0")}` as `0x${string}`;
           txHash = await writeContractAsync({
             address: routerAddress,
             abi: HARVEST_ROUTER_ABI,
             functionName: "harvestToStealth",
             args: [
               stockAddress,
-              0n, // minAmountOut
-              stealthDetails.ephemeralPubKey,
-              stealthDetails.viewTag,
+              targetToken,
+              0n, // minTargetAmount
               stealthDetails.stealthAddress,
+              stealthDetails.ephemeralPubKey,
+              metadata,
             ],
           });
         } else {
           txHash = await writeContractAsync({
             address: routerAddress,
             abi: HARVEST_ROUTER_ABI,
-            functionName: "harvest",
-            args: [stockAddress, 0n, finalRecipient as `0x${string}`],
+            functionName: "harvestToTarget",
+            args: [
+              stockAddress,
+              targetToken,
+              0n, // minTargetAmount
+              finalRecipient as `0x${string}`,
+            ],
           });
         }
       } else {
@@ -116,6 +129,7 @@ export function useHarvest() {
             : ALLOY_ADDRESSES.contracts.Mock_DEGEN;
 
         if (stealthDetails) {
+          const metadata = `0x${stealthDetails.viewTag.toString(16).padStart(2, "0")}` as `0x${string}`;
           txHash = await writeContractAsync({
             address: routerAddress,
             abi: HARVEST_ROUTER_ABI,
@@ -123,10 +137,10 @@ export function useHarvest() {
             args: [
               stockAddress,
               memeAddress,
-              0n,
-              stealthDetails.ephemeralPubKey,
-              stealthDetails.viewTag,
+              0n, // minMemeAmount
               stealthDetails.stealthAddress,
+              stealthDetails.ephemeralPubKey,
+              metadata,
             ],
           });
         } else {
@@ -134,7 +148,12 @@ export function useHarvest() {
             address: routerAddress,
             abi: HARVEST_ROUTER_ABI,
             functionName: "harvestToMeme",
-            args: [stockAddress, memeAddress, 0n, finalRecipient as `0x${string}`],
+            args: [
+              stockAddress,
+              memeAddress,
+              0n, // minMemeAmount
+              finalRecipient as `0x${string}`,
+            ],
           });
         }
       }
@@ -144,7 +163,7 @@ export function useHarvest() {
         type: params.destinationCurrency === "USDC" || params.destinationCurrency === "cNGN" ? "harvest" : "swap",
         title: `Harvested ${params.stockSymbol} to ${params.destinationCurrency}`,
         subtitle: isStealth ? "Stealth Dividend Rail" : "Direct Dividend Harvest",
-        amount: "75.00",
+        amount: params.estimatedAmount || "540.27",
         tokenSymbol: params.destinationCurrency,
         tags: isStealth ? ["harvest", "stealth payout"] : ["harvest", "personal"],
         note: isStealth ? `Routed to ${params.recipient}` : "Claimed to connected wallet",

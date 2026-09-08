@@ -3,7 +3,7 @@
 import { useAccount, useReadContracts } from "wagmi";
 import { formatUnits } from "viem";
 import { ALLOY_ADDRESSES } from "@/lib/contracts/addresses";
-import { B20_STOCK_ABI } from "@/lib/contracts/abis";
+import { B20_STOCK_ABI, HARVEST_ROUTER_ABI } from "@/lib/contracts/abis";
 import { StockTokenItem } from "@/components/ui/SignatureHeroCard";
 import { useProfile } from "@/lib/store/profileStore";
 
@@ -81,10 +81,10 @@ export function useAlloyStocks() {
       args: address ? [address] : undefined,
     },
     {
-      address: ALLOY_ADDRESSES.contracts.MockB20_AAPLc,
-      abi: B20_STOCK_ABI,
-      functionName: "calculateSurplus" as const,
-      args: address ? [address] : undefined,
+      address: ALLOY_ADDRESSES.contracts.Alloy_HarvestRouter,
+      abi: HARVEST_ROUTER_ABI,
+      functionName: "getPendingDividend" as const,
+      args: address ? [address, ALLOY_ADDRESSES.contracts.MockB20_AAPLc] : undefined,
     },
     // NVDAc
     {
@@ -99,10 +99,10 @@ export function useAlloyStocks() {
       args: address ? [address] : undefined,
     },
     {
-      address: ALLOY_ADDRESSES.contracts.MockB20_NVDAc,
-      abi: B20_STOCK_ABI,
-      functionName: "calculateSurplus" as const,
-      args: address ? [address] : undefined,
+      address: ALLOY_ADDRESSES.contracts.Alloy_HarvestRouter,
+      abi: HARVEST_ROUTER_ABI,
+      functionName: "getPendingDividend" as const,
+      args: address ? [address, ALLOY_ADDRESSES.contracts.MockB20_NVDAc] : undefined,
     },
     // COINc
     {
@@ -117,10 +117,10 @@ export function useAlloyStocks() {
       args: address ? [address] : undefined,
     },
     {
-      address: ALLOY_ADDRESSES.contracts.MockB20_COINc,
-      abi: B20_STOCK_ABI,
-      functionName: "calculateSurplus" as const,
-      args: address ? [address] : undefined,
+      address: ALLOY_ADDRESSES.contracts.Alloy_HarvestRouter,
+      abi: HARVEST_ROUTER_ABI,
+      functionName: "getPendingDividend" as const,
+      args: address ? [address, ALLOY_ADDRESSES.contracts.MockB20_COINc] : undefined,
     },
   ];
 
@@ -155,7 +155,7 @@ export function useAlloyStocks() {
   const stockItems: StockTokenItem[] = STOCKS.map((stock, i) => {
     const multRaw = data?.[i * 3]?.result as bigint | undefined;
     const balRaw = data?.[i * 3 + 1]?.result as bigint | undefined;
-    const surpRaw = data?.[i * 3 + 2]?.result as bigint | undefined;
+    const pendingDivData = data?.[i * 3 + 2]?.result as [bigint, bigint] | undefined;
 
     // Multiplier from contract (18 decimals: 1e18 = 1.000x)
     const multiplierFloat = multRaw ? Number(formatUnits(multRaw, 18)) : 1.0;
@@ -170,9 +170,26 @@ export function useAlloyStocks() {
     const yieldPct = Math.max(0, (multiplierFloat - 1.0) * 100);
     const yieldStr = yieldPct > 0 ? `+${yieldPct.toFixed(1)}% yield` : "0.0% yield";
 
-    // Real accrued surplus from live contract (0 if user has no surplus)
-    const surplusSharesFloat = surpRaw ? Number(formatUnits(surpRaw, 18)) : 0;
-    const harvestableUsd = Math.max(0, surplusSharesFloat * stock.spotPriceUsd);
+    // 1. Onchain pending dividend from AlloyHarvestRouter
+    const divQueryResult = data?.[i * 3 + 2];
+    const onchainSurplusShares = pendingDivData?.[0] ? Number(formatUnits(pendingDivData[0], 18)) : 0;
+    const onchainSurplusUsd = pendingDivData?.[1] && pendingDivData[1] > 0n
+      ? Number(formatUnits(pendingDivData[1], 18))
+      : onchainSurplusShares * stock.spotPriceUsd;
+
+    // 2. Mathematical surplus formula fallback:
+    // surplusShares = shares * (multiplier - 1.0) / multiplier
+    const mathSurplusShares =
+      multiplierFloat > 1.0 && sharesFloat > 0
+        ? (sharesFloat * (multiplierFloat - 1.0)) / multiplierFloat
+        : 0;
+    const mathSurplusUsd = mathSurplusShares * stock.spotPriceUsd;
+
+    // Prefer onchain pending dividend when query succeeds; fallback to mathematical surplus calculation
+    const harvestableUsd =
+      divQueryResult?.status === "success"
+        ? onchainSurplusUsd
+        : (onchainSurplusUsd > 0 ? onchainSurplusUsd : mathSurplusUsd);
     totalAvailableUsd += harvestableUsd;
 
     return {

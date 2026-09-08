@@ -2,11 +2,9 @@ import { parseAbi } from "viem";
 
 export const B20_STOCK_ABI = parseAbi([
   "function multiplier() view returns (uint256)",
-  "function initialMultiplier() view returns (uint256)",
-  "function baseUnits(address account) view returns (uint256)",
-  "function calculateSurplus(address holder) view returns (uint256)",
-  "function distributeDividend(uint256 dividendPerShare, uint256 currentStockPrice) external",
-  "function trimMultiplier(address holder, uint256 sharesToTrim) external",
+  "function effectiveBalanceOf(address account) view returns (uint256)",
+  "function distributeDividend(uint256 dividendPerShareWei, uint256 sharePriceWei) external",
+  "function updateMultiplier(uint256 newMultiplier) external",
   "function balanceOf(address account) view returns (uint256)",
   "function decimals() view returns (uint8)",
   "function name() view returns (string)",
@@ -17,11 +15,16 @@ export const B20_STOCK_ABI = parseAbi([
 ]);
 
 export const HARVEST_ROUTER_ABI = parseAbi([
-  "function harvest(address stock, uint256 minUsdcOut, address recipient) external returns (uint256 usdcAmount)",
-  "function harvestToStealth(address stock, uint256 minUsdcOut, bytes ephemeralPubKey, uint8 viewTag, address stealthAddress) external returns (uint256 usdcAmount)",
-  "function harvestToMeme(address stock, address memeToken, uint256 minMemeOut, address recipient) external returns (uint256 memeAmount)",
-  "function harvestToStealthMeme(address stock, address memeToken, uint256 minMemeOut, bytes ephemeralPubKey, uint8 viewTag, address stealthAddress) external returns (uint256 memeAmount)",
-  "event DividendHarvested(address indexed user, address indexed stock, uint256 surplusShares, uint256 usdcReceived, address recipient)",
+  "function getPendingDividend(address user, address stockToken) view returns (uint256 surplusShares, uint256 estimatedUsdValue)",
+  "function getCheckpoint(address user, address stockToken) view returns (uint256 lastMultiplier, uint256 lastTimestamp)",
+  "function checkpoint(address user, address stockToken) external",
+  "function harvestToTarget(address stockToken, address targetToken, uint256 minTargetAmount, address recipient) external returns (uint256 targetAmountOut)",
+  "function harvestToStealth(address stockToken, address targetToken, uint256 minTargetAmount, address stealthAddress, bytes ephemeralPubKey, bytes metadata) external returns (uint256 targetAmountOut)",
+  "function harvestToMeme(address stockToken, address memeToken, uint256 minMemeAmount, address recipient) external returns (uint256 memeAmountOut)",
+  "function harvestToStealthMeme(address stockToken, address memeToken, uint256 minMemeAmount, address stealthAddress, bytes ephemeralPubKey, bytes metadata) external returns (uint256 memeAmountOut)",
+  "event Harvested(address indexed user, address indexed stockToken, address indexed targetToken, uint256 surplusShares, uint256 targetAmountOut, address recipient)",
+  "event HarvestedToMeme(address indexed user, address indexed stockToken, address indexed memeToken, uint256 surplusShares, uint256 memeAmountOut, address recipient)",
+  "event UserCheckpointed(address indexed user, address indexed stockToken, uint256 multiplier)",
 ]);
 
 export const BASENAME_RESOLVER_ABI = parseAbi([

@@ -177,6 +177,7 @@ export default function HarvestPage() {
         destinationCurrency: selectedDest,
         recipient: payoutMode === "stealth" ? customRecipient : "self",
         stealthMetaAddress: resolvedMeta || undefined,
+        estimatedAmount: currentStockItem.harvestableSurplus.replace(/[^0-9.]/g, ""),
       };
 
       const result = await executeHarvest(params);
