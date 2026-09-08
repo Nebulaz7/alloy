@@ -135,7 +135,8 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <p className="text-xs text-neutral-500 font-normal mt-0.5">
-                  Mint 100 test AAPLc shares onchain to test dynamic yield multipliers and private dividend extraction.
+                  Mint 100 test AAPLc shares onchain to test dynamic yield
+                  multipliers and private dividend extraction.
                 </p>
               </div>
             </div>
@@ -181,7 +182,7 @@ export default function DashboardPage() {
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {/* Quick Action 1: Simulate Corporate Dividend Jump */}
           <div
-            onClick={() => setShowSim(true)}
+            onClick={() => router.push("/simulator")}
             className="p-4 rounded-3xl bg-white border border-neutral-200/80 hover:border-[#BAE6FD] transition-all shadow-xs cursor-pointer group flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
