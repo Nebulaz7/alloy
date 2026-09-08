@@ -157,31 +157,36 @@ export function useAlloyStocks() {
     const balRaw = data?.[i * 3 + 1]?.result as bigint | undefined;
     const pendingDivData = data?.[i * 3 + 2]?.result as [bigint, bigint] | undefined;
 
-    // Multiplier from contract (18 decimals: 1e18 = 1.000x)
+    // 1. Multiplier from contract (18 decimals: 1e18 = 1.000x)
     const multiplierFloat = multRaw ? Number(formatUnits(multRaw, 18)) : 1.0;
     const multiplierStr = `${multiplierFloat.toFixed(3)}x`;
 
-    // Real live balance from live contract (0 if user has no tokens)
-    const sharesFloat = balRaw ? Number(formatUnits(balRaw, 18)) : 0;
-    const principalValueUsd = sharesFloat * stock.spotPriceUsd;
-    totalPortfolioUsd += principalValueUsd;
+    // 2. Nominal ERC-20 token balance in wallet
+    const nominalSharesFloat = balRaw ? Number(formatUnits(balRaw, 18)) : 0;
+
+    // 3. Effective share entitlement under B20 standard:
+    // effectiveShares = (nominalBalance * multiplier) / 1e18
+    const effectiveSharesFloat =
+      balRaw && multRaw
+        ? Number(formatUnits((balRaw * multRaw) / 10n ** 18n, 18))
+        : nominalSharesFloat * multiplierFloat;
 
     // Yield % based on contract multiplier
     const yieldPct = Math.max(0, (multiplierFloat - 1.0) * 100);
     const yieldStr = yieldPct > 0 ? `+${yieldPct.toFixed(1)}% yield` : "0.0% yield";
 
-    // 1. Onchain pending dividend from AlloyHarvestRouter
+    // 4. Onchain pending dividend from AlloyHarvestRouter
     const divQueryResult = data?.[i * 3 + 2];
     const onchainSurplusShares = pendingDivData?.[0] ? Number(formatUnits(pendingDivData[0], 18)) : 0;
     const onchainSurplusUsd = pendingDivData?.[1] && pendingDivData[1] > 0n
       ? Number(formatUnits(pendingDivData[1], 18))
       : onchainSurplusShares * stock.spotPriceUsd;
 
-    // 2. Mathematical surplus formula fallback:
+    // 5. Mathematical surplus formula fallback:
     // surplusShares = shares * (multiplier - 1.0) / multiplier
     const mathSurplusShares =
-      multiplierFloat > 1.0 && sharesFloat > 0
-        ? (sharesFloat * (multiplierFloat - 1.0)) / multiplierFloat
+      multiplierFloat > 1.0 && nominalSharesFloat > 0
+        ? (nominalSharesFloat * (multiplierFloat - 1.0)) / multiplierFloat
         : 0;
     const mathSurplusUsd = mathSurplusShares * stock.spotPriceUsd;
 
@@ -192,10 +197,28 @@ export function useAlloyStocks() {
         : (onchainSurplusUsd > 0 ? onchainSurplusUsd : mathSurplusUsd);
     totalAvailableUsd += harvestableUsd;
 
+    // 6. Conserved Stock Principal Value:
+    // Total equity claim = effectiveShares * spotPriceUsd
+    // Conserved Principal = Total Equity Claim - harvestableUsd (surplus yet to be harvested)
+    // When surplus has already been harvested (harvestableUsd = 0), principalValueUsd is exactly the full effective equity value!
+    const totalEquityUsd = effectiveSharesFloat * stock.spotPriceUsd;
+    const principalValueUsd = Math.max(0, totalEquityUsd - harvestableUsd);
+    totalPortfolioUsd += principalValueUsd;
+
+    const conservedSharesFloat = stock.spotPriceUsd > 0 ? principalValueUsd / stock.spotPriceUsd : effectiveSharesFloat;
+
+    // Breakdown badge when tokens have accrued multipliers
+    const hasMultiplierEffect =
+      nominalSharesFloat > 0 && Math.abs(nominalSharesFloat - conservedSharesFloat) > 0.05;
+    const nominalTag = hasMultiplierEffect
+      ? `${nominalSharesFloat.toFixed(1)} B20 tokens`
+      : undefined;
+
     return {
       symbol: stock.symbol,
       name: stock.name,
-      shares: `${sharesFloat.toFixed(1)} ${stock.symbol}`,
+      shares: `${conservedSharesFloat.toFixed(1)} ${stock.symbol}`,
+      nominalShares: nominalTag,
       valueUsd: `${sym}${principalValueUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} principal`,
       multiplier: multiplierStr,
       dividendYield: yieldStr,

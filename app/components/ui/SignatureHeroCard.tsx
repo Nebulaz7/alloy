@@ -16,6 +16,7 @@ export interface StockTokenItem {
   symbol: "AAPLc" | "NVDAc" | "COINc" | string;
   name: string;
   shares: string;
+  nominalShares?: string;
   valueUsd: string;
   multiplier: string;
   dividendYield: string;
@@ -192,8 +193,15 @@ export const SignatureHeroCard: React.FC<SignatureHeroCardProps> = ({
                         {token.multiplier}
                       </span>
                     </div>
-                    <div className="text-xs text-neutral-400 font-normal">
-                      {token.shares} • {token.valueUsd}
+                    <div className="text-xs text-neutral-400 font-normal flex items-center gap-1.5 flex-wrap">
+                      <span>{token.shares}</span>
+                      {token.nominalShares && (
+                        <span className="text-[10px] text-neutral-500 bg-neutral-100/90 border border-neutral-200/60 px-1.5 py-0.5 rounded-md font-mono">
+                          {token.nominalShares}
+                        </span>
+                      )}
+                      <span>•</span>
+                      <span>{token.valueUsd}</span>
                     </div>
                   </div>
                 </div>
