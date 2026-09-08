@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Copy, Check, QrCode, ExternalLink, MoreHorizontal, ShieldCheck } from "lucide-react";
+import { getPersonalLink } from "@/lib/config/url";
 
 interface PersonalLinkCardProps {
   title?: string;
@@ -26,8 +27,10 @@ export const PersonalLinkCard: React.FC<PersonalLinkCardProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
+  const fullPersonalUrl = getPersonalLink(handle);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(handle);
+    navigator.clipboard.writeText(fullPersonalUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -99,15 +102,13 @@ export const PersonalLinkCard: React.FC<PersonalLinkCardProps> = ({
           ) : null}
 
           {/* Open Link Button */}
-          {onOpenLink ? (
-            <button
-              onClick={onOpenLink}
-              title="Open Link"
-              className="p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </button>
-          ) : null}
+          <button
+            onClick={onOpenLink || (() => window.open(fullPersonalUrl, "_blank"))}
+            title="Open Payment Link"
+            className="p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { X, Copy, Check, Share2, Wallet, Link as LinkIcon, ShieldCheck } from "l
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/Button";
 import { AlloyLogo } from "@/components/brand/AlloyLogo";
+import { getPersonalLink } from "@/lib/config/url";
 
 interface QRCodeModalProps {
   isOpen: boolean;
@@ -26,7 +27,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
 
   // Fallback demo address if unauthenticated
   const activeAddress = address || "0xeca6Ff5Ce16bf15E38a4F28DE6da2397438f7918";
-  const paymentUrl = `https://alloy.cash/${handle.replace(".base.eth", "")}`;
+  const paymentUrl = getPersonalLink(handle);
 
   if (!isOpen) return null;
 
