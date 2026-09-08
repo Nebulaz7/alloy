@@ -35,6 +35,13 @@ export const BASENAME_RESOLVER_ABI = parseAbi([
   "function isNameAvailable(string basename) view returns (bool)",
 ]);
 
+export const L2_RESOLVER_ABI = parseAbi([
+  "function addr(bytes32 node) view returns (address)",
+  "function text(bytes32 node, string key) view returns (string)",
+  "function setAddr(bytes32 node, address a) external",
+  "function setText(bytes32 node, string key, string value) external",
+]);
+
 export const STEALTH_RELAYER_ABI = parseAbi([
   "function sweepWithPermit(address token, address stealthAddress, address destination, uint256 amount, uint256 relayerFee, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external",
   "event StealthFundsSwept(address indexed token, address indexed stealthAddress, address indexed destination, uint256 amount, uint256 feePaid, address relayer)",

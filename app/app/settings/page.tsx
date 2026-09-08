@@ -31,6 +31,7 @@ import { ConnectedWalletsModal } from "@/components/modals/ConnectedWalletsModal
 import { LogoutModal } from "@/components/modals/LogoutModal";
 import { EmojiColorPickerModal } from "@/components/profile/EmojiColorPickerModal";
 import { useProfile } from "@/lib/store/profileStore";
+import { useBasename } from "@/lib/hooks/useBasename";
 import { ALLOY_ADDRESSES } from "@/lib/contracts/addresses";
 import { openReownModal } from "@/lib/wagmi";
 
@@ -39,6 +40,7 @@ export default function SettingsPage() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { profile, updateProfile, setCurrency } = useProfile();
+  const { checkOnchainStatus, publishOnchain, isPublishing, publishError } = useBasename();
 
   // Modal visibility states
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
@@ -47,9 +49,54 @@ export default function SettingsPage() {
   const [showWalletsModal, setShowWalletsModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+  // Onchain publishing & stealth state
+  const [onchainStatus, setOnchainStatus] = useState<{
+    isPublished: boolean;
+    resolvedAddr: string | null;
+    stealthRecord: string | null;
+  } | null>(null);
+  const [publishedTx, setPublishedTx] = useState<string | null>(null);
+  const [copiedStealth, setCopiedStealth] = useState(false);
+  const [showStealthKeys, setShowStealthKeys] = useState(false);
+
   // Clipboard feedback states
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [copiedContract, setCopiedContract] = useState<string | null>(null);
+
+  // Check onchain publication status on Base Sepolia
+  React.useEffect(() => {
+    let active = true;
+    if (profile.basename) {
+      checkOnchainStatus(profile.basename).then((res) => {
+        if (active) setOnchainStatus(res);
+      });
+    }
+    return () => {
+      active = false;
+    };
+  }, [profile.basename, checkOnchainStatus, publishedTx]);
+
+  const handlePublishOnchain = async () => {
+    if (!profile.basename || !profile.stealthKeyPair) return;
+    try {
+      const res = await publishOnchain({
+        basename: profile.basename,
+        stealthMetaAddress: profile.stealthKeyPair.stealthMetaAddress,
+      });
+      setPublishedTx(res.txHash);
+      updateProfile({ isVerified: true });
+      const statusRes = await checkOnchainStatus(profile.basename);
+      setOnchainStatus(statusRes);
+    } catch (e) {
+      console.error("Publishing onchain failed:", e);
+    }
+  };
+
+  const handleCopyStealth = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedStealth(true);
+    setTimeout(() => setCopiedStealth(false), 2000);
+  };
 
   // Preference switches
   const [autoStealth, setAutoStealth] = useState(true);
@@ -227,6 +274,131 @@ export default function SettingsPage() {
                 <span>Customize</span>
               </Button>
             </div>
+          </div>
+
+          {/* Onchain Basename & Stealth Publishing Panel */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                  onchainStatus?.isPublished
+                    ? "bg-[#DCFCE7] text-[#15803D]"
+                    : "bg-[#E0F2FE] text-[#007FFF]"
+                }`}>
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="font-heading font-medium text-sm text-neutral-900 flex items-center gap-2">
+                    <span>Onchain Basename Resolution</span>
+                    {onchainStatus?.isPublished ? (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#DCFCE7] text-[#15803D] font-medium border border-[#BBF7D0]">
+                        Live on Base Sepolia
+                      </span>
+                    ) : (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FEF3C7] text-[#B45309] font-medium border border-[#FDE68A]">
+                        Not Yet Published Onchain
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-neutral-400 font-normal">
+                    {onchainStatus?.isPublished
+                      ? `Resolves ${profile.basename} to ${displayAddress.slice(0, 6)}...${displayAddress.slice(-4)} with ERC-5564 stealth records.`
+                      : `Publish ${profile.basename} to MockL2Resolver so external users can route private dividends to this wallet.`}
+                  </div>
+                </div>
+              </div>
+
+              {!onchainStatus?.isPublished ? (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  isLoading={isPublishing}
+                  disabled={isPublishing || !isConnected}
+                  onClick={handlePublishOnchain}
+                  className="shrink-0 text-xs rounded-xl shadow-xs cursor-pointer"
+                  leftIcon={<Sparkles className="w-3.5 h-3.5" />}
+                >
+                  {isPublishing ? "Publishing to Base..." : "Publish to Base Sepolia"}
+                </Button>
+              ) : (
+                <a
+                  href={`https://sepolia.basescan.org/address/${ALLOY_ADDRESSES.contracts.Mock_L2Resolver}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-xs font-medium transition-colors cursor-pointer shrink-0"
+                >
+                  <span>View L2 Resolver</span>
+                  <ExternalLink className="w-3 h-3 text-neutral-400" />
+                </a>
+              )}
+            </div>
+
+            {publishedTx && (
+              <div className="p-3 rounded-xl bg-[#DCFCE7]/60 border border-[#BBF7D0] flex items-center justify-between gap-2 text-xs text-[#15803D]">
+                <span className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Successfully published identity and stealth text record on Base Sepolia!</span>
+                </span>
+                <a
+                  href={`https://sepolia.basescan.org/tx/${publishedTx}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline font-medium hover:text-[#166534] shrink-0"
+                >
+                  View Tx
+                </a>
+              </div>
+            )}
+
+            {publishError && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
+                {publishError}
+              </div>
+            )}
+
+            {/* Collapsible Stealth Meta-Address Record Details */}
+            <div className="pt-2 border-t border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-2 text-neutral-500 font-mono truncate max-w-md">
+                <Lock className="w-3.5 h-3.5 text-[#007FFF] shrink-0" />
+                <span className="text-neutral-400 shrink-0">Stealth Record:</span>
+                <span className="truncate">
+                  {profile.stealthKeyPair?.stealthMetaAddress || "st:eth:0x..."}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {profile.stealthKeyPair?.stealthMetaAddress && (
+                  <button
+                    type="button"
+                    onClick={() => handleCopyStealth(profile.stealthKeyPair!.stealthMetaAddress)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[11px] font-medium transition-colors cursor-pointer"
+                  >
+                    {copiedStealth ? <Check className="w-3 h-3 text-[#10B981]" /> : <Copy className="w-3 h-3 text-neutral-400" />}
+                    <span>{copiedStealth ? "Copied" : "Copy Stealth Record"}</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowStealthKeys(!showStealthKeys)}
+                  className="text-[11px] text-[#007FFF] hover:underline font-medium cursor-pointer"
+                >
+                  {showStealthKeys ? "Hide Keys" : "Inspect Keypair"}
+                </button>
+              </div>
+            </div>
+
+            {showStealthKeys && profile.stealthKeyPair && (
+              <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-200/80 space-y-2 text-[11px] font-mono text-neutral-600">
+                <div>
+                  <span className="text-neutral-400 block text-[10px] uppercase tracking-wider">Spending Public Key (33 bytes):</span>
+                  <span className="text-neutral-800 break-all">{profile.stealthKeyPair.spendingPublicKey}</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] uppercase tracking-wider">Viewing Public Key (33 bytes):</span>
+                  <span className="text-neutral-800 break-all">{profile.stealthKeyPair.viewingPublicKey}</span>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

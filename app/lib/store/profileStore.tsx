@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import { generateStealthKeyPair, StealthKeyPair } from "@/lib/crypto/stealth";
 
 export interface UserProfile {
@@ -50,35 +51,88 @@ const STORAGE_KEY = "alloy_profile_v1";
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { address: connectedAddress, isConnected } = useAccount();
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Hydrate from localStorage on client mount
-  useEffect(() => {
+  const loadProfileForAddress = React.useCallback((addr: string): boolean => {
+    if (!addr) return false;
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const perAddressKey = `alloy_profile_${addr.toLowerCase()}`;
+      const stored = localStorage.getItem(perAddressKey);
       if (stored) {
         const parsed = JSON.parse(stored);
         setProfile((prev) => ({
           ...prev,
           ...parsed,
-          currencySymbol: CURRENCY_SYMBOLS[parsed.currency as UserProfile["currency"]] || "$",
+          address: addr,
+          isClaimed: true,
         }));
+        return true;
       } else {
-        // Auto-generate initial stealth keypair for new users
-        const newKeys = generateStealthKeyPair();
-        setProfile((prev) => {
-          const updated = { ...prev, stealthKeyPair: newKeys };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-          return updated;
-        });
+        // Fresh address without a saved profile: generate fresh isolated stealth keys
+        const freshKeys = generateStealthKeyPair();
+        const short = `${addr.slice(2, 6)}`;
+        const freshProfile: UserProfile = {
+          username: `user_${short}`,
+          basename: `user_${short}.base.eth`,
+          avatarEmoji: "✨",
+          avatarBg: "#007FFF",
+          address: addr,
+          isVerified: false,
+          isClaimed: false,
+          currency: "USD",
+          currencySymbol: "$",
+          stealthKeyPair: freshKeys,
+        };
+        setProfile(freshProfile);
+        try {
+          localStorage.setItem(perAddressKey, JSON.stringify(freshProfile));
+        } catch {}
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }, []);
+
+  // Hydrate from localStorage on client mount
+  useEffect(() => {
+    try {
+      if (isConnected && connectedAddress) {
+        loadProfileForAddress(connectedAddress);
+      } else {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setProfile((prev) => ({
+            ...prev,
+            ...parsed,
+            currencySymbol: CURRENCY_SYMBOLS[parsed.currency as UserProfile["currency"]] || "$",
+          }));
+        } else {
+          // Auto-generate initial stealth keypair for new users
+          const newKeys = generateStealthKeyPair();
+          setProfile((prev) => {
+            const updated = { ...prev, stealthKeyPair: newKeys };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+          });
+        }
       }
     } catch {
       // LocalStorage unavailable
     } finally {
       setIsHydrated(true);
     }
-  }, []);
+  }, [connectedAddress, isConnected, loadProfileForAddress]);
+
+  // Sync with connected wallet address whenever user switches accounts
+  useEffect(() => {
+    if (isConnected && connectedAddress && connectedAddress.toLowerCase() !== profile.address.toLowerCase()) {
+      loadProfileForAddress(connectedAddress);
+    }
+  }, [connectedAddress, isConnected, profile.address, loadProfileForAddress]);
 
   const updateProfile = React.useCallback((data: Partial<UserProfile>) => {
     setProfile((prev) => {
@@ -97,39 +151,6 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       } catch {}
       return updated;
     });
-  }, []);
-
-  const loadProfileForAddress = React.useCallback((addr: string): boolean => {
-    if (!addr) return false;
-    try {
-      const perAddressKey = `alloy_profile_${addr.toLowerCase()}`;
-      const stored = localStorage.getItem(perAddressKey);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setProfile((prev) => ({
-          ...prev,
-          ...parsed,
-          address: addr,
-          isClaimed: true,
-        }));
-        return true;
-      } else {
-        // Fresh address without a saved profile
-        const freshKeys = generateStealthKeyPair();
-        setProfile((prev) => ({
-          ...prev,
-          username: "",
-          basename: "",
-          address: addr,
-          isVerified: false,
-          isClaimed: false,
-          stealthKeyPair: freshKeys,
-        }));
-        return false;
-      }
-    } catch {
-      return false;
-    }
   }, []);
 
   const setCurrency = React.useCallback((currency: UserProfile["currency"]) => {
