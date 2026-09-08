@@ -30,6 +30,7 @@ import { useAlloyStocks } from "@/lib/hooks/useAlloyStocks";
 import { useTokenBalances } from "@/lib/hooks/useTokenBalances";
 import { useSimulator } from "@/lib/hooks/useSimulator";
 import { openReownModal } from "@/lib/wagmi";
+import { TokenBalancesTable } from "@/components/faucet/TokenBalancesTable";
 import { ALLOY_ADDRESSES, SupportedStockSymbol } from "@/lib/contracts/addresses";
 
 const STOCK_DATA = [
@@ -554,7 +555,12 @@ export default function SimulatorPage() {
           </div>
         </section>
 
-        {/* 4. Technical Explainer: How Rebasing Dividend Cashflows Work */}
+        {/* 4. Testnet Assets & Faucet Hub */}
+        <section id="faucet-hub">
+          <TokenBalancesTable onTokensMinted={() => refetchStocks()} />
+        </section>
+
+        {/* 5. Technical Explainer: How Rebasing Dividend Cashflows Work */}
         <section className="p-5 sm:p-6 rounded-3xl bg-white border border-neutral-200/80 shadow-xs space-y-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#007FFF]" />
