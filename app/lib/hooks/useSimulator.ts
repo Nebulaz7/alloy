@@ -52,29 +52,57 @@ export function useSimulator() {
     }
 
     try {
-      const stockAddress =
-        stockSymbol === "AAPLc"
-          ? ALLOY_ADDRESSES.contracts.MockB20_AAPLc
-          : stockSymbol === "NVDAc"
-          ? ALLOY_ADDRESSES.contracts.MockB20_NVDAc
-          : ALLOY_ADDRESSES.contracts.MockB20_COINc;
+      let hash: `0x${string}` | null = null;
 
-      const divWei = parseUnits(dividendAmount, 18);
-      const priceWei = parseUnits(stockPrice, 18);
+      // 1. Try authorized operator relay API first to prevent AccessControl 0xe2517d3f error
+      try {
+        const res = await fetch("/api/simulate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            stockSymbol,
+            dividendAmount,
+            stockPrice,
+            userAddress: address,
+          }),
+        });
+        const data = await res.json();
+        if (data.success && data.txHash) {
+          hash = data.txHash as `0x${string}`;
+        } else {
+          throw new Error(data.error || "Relay simulation failed");
+        }
+      } catch (apiErr) {
+        console.warn("API simulation fallback to wallet write:", apiErr);
 
-      const hash = await writeContractAsync({
-        address: stockAddress,
-        abi: B20_STOCK_ABI,
-        functionName: "distributeDividend",
-        args: [divWei, priceWei],
-      });
+        // 2. Direct wallet fallback
+        const stockAddress =
+          stockSymbol === "AAPLc"
+            ? ALLOY_ADDRESSES.contracts.MockB20_AAPLc
+            : stockSymbol === "NVDAc"
+            ? ALLOY_ADDRESSES.contracts.MockB20_NVDAc
+            : ALLOY_ADDRESSES.contracts.MockB20_COINc;
 
-      setTxHash(hash);
+        const divWei = parseUnits(dividendAmount, 18);
+        const priceWei = parseUnits(stockPrice, 18);
 
-      if (publicClient) {
-        await publicClient.waitForTransactionReceipt({ hash });
+        hash = await writeContractAsync({
+          address: stockAddress,
+          abi: B20_STOCK_ABI,
+          functionName: "distributeDividend",
+          args: [divWei, priceWei],
+        });
+
+        if (publicClient) {
+          await publicClient.waitForTransactionReceipt({ hash });
+        }
       }
 
+      if (!hash) {
+        throw new Error("No transaction hash returned from simulation");
+      }
+
+      setTxHash(hash);
       setIsSuccess(true);
 
       // Log event in activity store
