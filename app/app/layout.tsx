@@ -52,12 +52,17 @@ export const metadata: Metadata = {
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      {
+        url: "/icons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
     ],
     shortcut: "/favicon.ico",
   },
   other: {
     "mobile-web-app-capable": "yes",
+    "base:app_id": "6aa041ba227c28e4adffe4ec",
   },
 };
 
