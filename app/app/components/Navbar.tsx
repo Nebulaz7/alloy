@@ -38,13 +38,13 @@ const Navbar = () => {
         {/* Actions */}
         <div className="flex items-center justify-end gap-4">
           <a
-            href="/docs"
+            href="https://github.com/nebulaz7/alloy"
             className="hidden text-sm font-medium text-white transition-colors hover:text-white-100 md:block"
           >
-            Docs
+            Github
           </a>
           <a
-            href="https://github.com/nebulaz7/alloy"
+            href="/login"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 rounded-lg bg-[#007fff] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-black active:scale-[0.97]"

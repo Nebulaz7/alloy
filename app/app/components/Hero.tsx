@@ -6,11 +6,15 @@ const Hero = () => {
       <div className="flex flex-col items-center gap-4">
         <h1 className="font-extrabold text-white text-5xl md:text-[64px] tracking-tight">
           <span className="bg-clip-text bg-gradient-to-r from-[#007fff] via-white to-[#007fff]">
-            Alloy
+            Receive dividends in any currency, and use privately
           </span>
         </h1>
         <div>
-          <p className="text-[#E0E0E0] text-lg md:text-xl">AI-Powered Financial Advisor</p>
+          <p className="text-[#E0E0E0] text-lg md:text-xl">
+            Alloy allows you to get dividends from your base B20 tokenized
+            stocks in stablecoins or memecoins, while staying private without
+            exposing your wallet address.
+          </p>
         </div>
         <a
           href="/dashboard"
