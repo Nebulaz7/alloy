@@ -5,9 +5,15 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 const Hero = () => {
   return (
     <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto py-12">
+      {/* Centered ambient backdrop scrim specifically behind the text */}
+      <div className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none">
+        <div className="w-full max-w-3xl h-[440px] bg-black/60 rounded-full blur-3xl" />
+        <div className="absolute w-[80%] max-w-xl h-[280px] bg-[#007fff]/10 rounded-full blur-2xl" />
+      </div>
+
       <div className="flex flex-col items-center gap-6">
         {/* Hero Headline */}
-        <h1 className="max-w-4xl font-extrabold text-white text-4xl sm:text-6xl md:text-[68px] tracking-tight leading-[1.12]">
+        <h1 className="max-w-4xl font-extrabold text-white text-4xl sm:text-6xl md:text-[68px] tracking-tight leading-[1.12] drop-shadow-md">
           Receive dividends in{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#007fff] via-[#60a5fa] to-white">
             any currency
@@ -19,7 +25,7 @@ const Hero = () => {
         </h1>
 
         {/* Subtitle */}
-        <p className="max-w-2xl text-neutral-300 text-base sm:text-lg md:text-xl font-normal leading-relaxed">
+        <p className="max-w-2xl text-neutral-200 text-base sm:text-lg md:text-xl font-normal leading-relaxed drop-shadow-sm">
           Alloy allows you to get dividends from your Base B20 tokenized stocks
           in stablecoins or memecoins, while staying private without exposing
           your wallet address.

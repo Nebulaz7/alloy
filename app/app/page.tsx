@@ -14,6 +14,11 @@ export default function Home() {
           <NebulazShader theme="dark" />
         </div>
 
+        {/* Ambient Dark Scrim & Radial Vignette Overlay for Text Readability */}
+        <div className="absolute inset-0 bg-black/40 pointer-events-none z-[1]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,transparent_15%,rgba(0,0,0,0.75)_100%)] pointer-events-none z-[2]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70 pointer-events-none z-[3]" />
+
         {/* Navbar and Hero content overlaid on top */}
         <div className="relative z-10 flex flex-col h-full w-full">
           <Navbar />
