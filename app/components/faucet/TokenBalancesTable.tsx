@@ -36,7 +36,9 @@ export const TokenBalancesTable: React.FC<TokenBalancesTableProps> = ({
     refetch,
   } = useTokenBalances();
 
-  const [activeCategory, setActiveCategory] = useState<"all" | TokenCategory>("all");
+  const [activeCategory, setActiveCategory] = useState<"all" | TokenCategory>(
+    "all",
+  );
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [justMintedToken, setJustMintedToken] = useState<string | null>(null);
 
@@ -127,7 +129,9 @@ export const TokenBalancesTable: React.FC<TokenBalancesTableProps> = ({
             }
             className="!py-1.5 !px-3.5 !text-xs !rounded-xl cursor-pointer bg-gradient-to-r from-[#007FFF] to-[#0066CC]"
           >
-            {isMinting === "STARTER_PACK" ? "Minting Pack..." : "Mint Starter Pack"}
+            {isMinting === "STARTER_PACK"
+              ? "Minting Pack..."
+              : "Mint Starter Pack"}
           </Button>
         </div>
       </div>
@@ -149,7 +153,8 @@ export const TokenBalancesTable: React.FC<TokenBalancesTableProps> = ({
                 </span>
               </div>
               <div className="text-xs text-neutral-500 font-mono mt-0.5">
-                Balance: <strong className="text-neutral-900">{ethBalance}</strong>
+                Balance:{" "}
+                <strong className="text-neutral-900">{ethBalance}</strong>
               </div>
             </div>
           </div>
@@ -198,7 +203,9 @@ export const TokenBalancesTable: React.FC<TokenBalancesTableProps> = ({
             const isItemMinting = isMinting === token.symbol;
             const isJustMinted = justMintedToken === token.symbol;
             const formattedDisplayAmount =
-              token.defaultMintAmount === "50000" ? "50,000" : token.defaultMintAmount;
+              token.defaultMintAmount === "50000"
+                ? "50,000"
+                : token.defaultMintAmount;
 
             return (
               <div
@@ -224,22 +231,24 @@ export const TokenBalancesTable: React.FC<TokenBalancesTableProps> = ({
                               token.category === "equity"
                                 ? "bg-[#DCFCE7] text-[#15803D]"
                                 : token.category === "stable"
-                                ? "bg-[#E0F2FE] text-[#007FFF]"
-                                : "bg-[#F3E8FF] text-[#7E22CE]"
+                                  ? "bg-[#E0F2FE] text-[#007FFF]"
+                                  : "bg-[#F3E8FF] text-[#7E22CE]"
                             }`}
                           >
                             {token.category === "equity"
                               ? "B20 Equity"
                               : token.category === "stable"
-                              ? "Stablecoin"
-                              : "Meme"}
+                                ? "Stablecoin"
+                                : "Meme"}
                           </span>
                         </div>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <div className="text-xs text-neutral-400 font-normal">Balance</div>
+                      <div className="text-xs text-neutral-400 font-normal">
+                        Balance
+                      </div>
                       <div className="font-heading font-bold text-neutral-900 text-sm">
                         {token.balanceFormatted}
                       </div>
@@ -279,25 +288,31 @@ export const TokenBalancesTable: React.FC<TokenBalancesTableProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleMint(token.symbol, token.defaultMintAmount)}
+                    onClick={() =>
+                      handleMint(token.symbol, token.defaultMintAmount)
+                    }
                     disabled={isItemMinting}
                     leftIcon={
                       isJustMinted ? (
                         <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" />
                       ) : (
-                        <Coins className={`w-3.5 h-3.5 text-[#007FFF] ${isItemMinting ? "animate-spin" : ""}`} />
+                        <Coins
+                          className={`w-3.5 h-3.5 text-[#007FFF] ${isItemMinting ? "animate-spin" : ""}`}
+                        />
                       )
                     }
                     className={`!py-1.5 !px-3 !text-xs !rounded-xl cursor-pointer ${
-                      isJustMinted ? "!border-[#10B981] !text-[#10B981] !bg-[#DCFCE7]/30" : ""
+                      isJustMinted
+                        ? "!border-[#10B981] !text-[#10B981] !bg-[#DCFCE7]/30"
+                        : ""
                     }`}
                   >
                     <span>
                       {isItemMinting
                         ? "Minting..."
                         : isJustMinted
-                        ? "Minted!"
-                        : `Mint ${formattedDisplayAmount}`}
+                          ? "Minted!"
+                          : `Mint ${formattedDisplayAmount}`}
                     </span>
                   </Button>
                 </div>
@@ -307,12 +322,12 @@ export const TokenBalancesTable: React.FC<TokenBalancesTableProps> = ({
         </div>
 
         {/* Explainer / Guide Footnote */}
-        <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-start gap-2.5 text-xs text-neutral-500 leading-relaxed">
+        {/* <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-start gap-2.5 text-xs text-neutral-500 leading-relaxed">
           <Sparkles className="w-4 h-4 text-[#007FFF] shrink-0 mt-0.5" />
           <span>
             <strong>Testing Note for Judges:</strong> All 9 assets above are deployed directly on <strong>Base Sepolia</strong> with open minting access. Minting test shares automatically updates your balances across the Dashboard, Harvest Studio, and Simulator.
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
   );
