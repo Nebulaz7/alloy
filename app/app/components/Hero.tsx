@@ -26,9 +26,8 @@ const Hero = () => {
 
         {/* Subtitle */}
         <p className="max-w-2xl text-neutral-200 text-base sm:text-lg md:text-xl font-normal leading-relaxed drop-shadow-sm">
-          Alloy allows you to get dividends from your Base B20 tokenized stocks
-          in stablecoins or memecoins, while staying private without exposing
-          your wallet address.
+          Get dividends from your Base B20 tokenized stocks in stablecoins or
+          memecoins, while staying private without exposing your wallet address.
         </p>
 
         {/* Call to Actions */}
