@@ -7,6 +7,7 @@ import { AlloyMascot } from "./AlloyMascot";
 interface AlloyLogoProps {
   size?: "sm" | "md" | "lg";
   variant?: "default" | "no-beta" | "icon-only";
+  wordmarkColor?: string;
   showBeta?: boolean;
   showWordmark?: boolean;
   href?: string | null;
@@ -43,6 +44,7 @@ export const AlloyLogo: React.FC<AlloyLogoProps> = ({
   showBeta,
   showWordmark,
   href = "/",
+  wordmarkColor = "",
   className = "",
 }) => {
   const config = sizeConfig[size];
@@ -65,7 +67,8 @@ export const AlloyLogo: React.FC<AlloyLogoProps> = ({
       {isWordmarkVisible ? (
         <div className="flex items-center logo-font">
           <span
-            className={`font-black tracking-tight text-neutral-900 ${config.textSize}`}
+            className={`font-medium tracking-tight ${config.textSize}`}
+            style={{ color: wordmarkColor }}
           >
             alloy
           </span>

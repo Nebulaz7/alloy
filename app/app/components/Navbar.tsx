@@ -10,7 +10,7 @@ const Navbar = () => {
       <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center py-4 px-10">
         {/* Logo + wordmark */}
         <a href="/" className="flex items-center gap-2 select-none">
-          <AlloyLogo size="md" />
+          <AlloyLogo size="md" wordmarkColor="text-white" />
         </a>
 
         {/* Nav links: centered, clean text */}
