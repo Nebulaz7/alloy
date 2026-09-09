@@ -1,27 +1,65 @@
 import React from "react";
+import Link from "next/link";
+import { ArrowRight, ExternalLink } from "lucide-react";
 
 const Hero = () => {
   return (
-    <div className="flex flex-col items-center justify-center text-center px-4">
-      <div className="flex flex-col items-center gap-4">
-        <h1 className="font-extrabold text-white text-5xl md:text-[64px] tracking-tight">
-          <span className="bg-clip-text bg-gradient-to-r from-[#007fff] via-white to-[#007fff]">
-            Receive dividends in any currency, and use privately
+    <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto py-12">
+      <div className="flex flex-col items-center gap-6">
+        {/* Hero Headline */}
+        <h1 className="max-w-4xl font-extrabold text-white text-4xl sm:text-6xl md:text-[68px] tracking-tight leading-[1.12]">
+          Receive dividends in{" "}
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#007fff] via-[#60a5fa] to-white">
+            any currency
+          </span>
+          , and use{" "}
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#93c5fd] to-[#007fff]">
+            privately
           </span>
         </h1>
-        <div>
-          <p className="text-[#E0E0E0] text-lg md:text-xl">
-            Alloy allows you to get dividends from your base B20 tokenized
-            stocks in stablecoins or memecoins, while staying private without
-            exposing your wallet address.
-          </p>
+
+        {/* Subtitle */}
+        <p className="max-w-2xl text-neutral-300 text-base sm:text-lg md:text-xl font-normal leading-relaxed">
+          Alloy allows you to get dividends from your Base B20 tokenized stocks
+          in stablecoins or memecoins, while staying private without exposing
+          your wallet address.
+        </p>
+
+        {/* Call to Actions */}
+        <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#007fff] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-[#0066ff] hover:shadow-blue-500/40 hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+          >
+            <span>Launch App</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <a
+            href="https://github.com/nebulaz7/alloy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] px-5 py-3 text-sm font-medium text-neutral-200 backdrop-blur-md transition-all hover:bg-white/[0.1] hover:border-white/[0.2] hover:text-white active:scale-[0.98] cursor-pointer"
+          >
+            <span>View on GitHub</span>
+            <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+          </a>
         </div>
-        <a
-          href="/dashboard"
-          className="rounded-lg bg-[#007fff] px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-black active:scale-[0.97] cursor-pointer inline-flex items-center justify-center shadow-lg shadow-blue-500/20"
-        >
-          <span>Launch App</span>
-        </a>
+
+        {/* Feature / Asset Proof Tags */}
+        <div className="pt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-neutral-400">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/[0.08] backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
+            <span>Base B20 Equities ($AAPLc, $NVDAc)</span>
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/[0.08] backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#007fff]" />
+            <span>ERC-5564 Stealth Rails</span>
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/[0.08] backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b]" />
+            <span>USDC • cNGN • CLANKER</span>
+          </div>
+        </div>
       </div>
     </div>
   );
