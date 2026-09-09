@@ -14,13 +14,13 @@ const Hero = () => {
       <div className="flex flex-col items-center gap-6">
         {/* Hero Headline */}
         <h1 className="max-w-4xl font-extrabold text-white text-4xl sm:text-6xl md:text-[68px] tracking-tight leading-[1.12] drop-shadow-md">
-          Receive dividends in{" "}
+          Receive stock dividends in{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#007fff] via-[#60a5fa] to-white">
             any currency
           </span>
-          , and use{" "}
+          , completely{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#93c5fd] to-[#007fff]">
-            privately
+            private
           </span>
         </h1>
 
