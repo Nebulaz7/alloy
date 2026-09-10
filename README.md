@@ -182,7 +182,7 @@ graph TD
 
 ---
 
-## 📱 Application Preview
+<!--- ## 📱 Application Preview
 
 | Hero & WebGL Background | Interactive Surplus Harvest |
 | :---: | :---: |
@@ -195,6 +195,7 @@ graph TD
 | *O(1) view tag announcement scanning with instant sweeping* | *1-click publish to Base Sepolia MockL2Resolver & ERC-6538* |
 
 ---
+-->
 
 ## 📜 Deployed Contracts (Base Sepolia)
 
