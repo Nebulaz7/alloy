@@ -33,9 +33,9 @@
 
 ## ⚡ Quick Links
 
-- **Live Application**: [https://alloy.cash](https://alloy.cash) *(or local preview at `http://localhost:3000`)*
-- **Demo Video**: [Watch Loom Demo Walkthrough](https://loom.com/) *(Paste your submission Loom link)*
-- **Interactive Pitch Deck**: [http://localhost:3000/deck](http://localhost:3000/deck) *(or download [`Alloy_Pitch_Deck.pptx`](Alloy_Pitch_Deck.pptx))*
+- **Live Application**: [https://alloy.nebulaz.xyz/](https://alloy.nebulaz.xyz/)
+- **Demo Video**: [Watch Loom Demo Walkthrough](https://loom.com/)
+- **Interactive Pitch Deck**: [http://localhost:3000/deck](https://alloy.nebulaz.xyz/deck)
 - **Base Builder Quest Code**: `bc_yd1de2n7`
 - **Target Network**: Base Sepolia (`Chain ID: 84532`)
 
