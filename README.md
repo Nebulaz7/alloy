@@ -33,9 +33,9 @@
 
 ## ⚡ Quick Links
 
-- **Live Application**: [https://alloy.cash](https://alloy.cash) *(or local preview at `http://localhost:3000`)*
-- **Demo Video**: [Watch Loom Demo Walkthrough](https://loom.com/) *(Paste your submission Loom link)*
-- **Interactive Pitch Deck**: [http://localhost:3000/deck](http://localhost:3000/deck) *(or download [`Alloy_Pitch_Deck.pptx`](Alloy_Pitch_Deck.pptx))*
+- **Live Application**: [https://alloy.nebulaz.xyz/](https://alloy.nebulaz.xyz/)
+- **Demo Video**: [Demo video](https://www.loom.com/share/cb513a90c15d4c94acfaf24d3534ede8)
+- **Interactive Pitch Deck**: [https://alloy.nebulaz.xyz/sdeck](https://alloy.nebulaz.xyz/deck)
 - **Base Builder Quest Code**: `bc_yd1de2n7`
 - **Target Network**: Base Sepolia (`Chain ID: 84532`)
 
@@ -182,7 +182,7 @@ graph TD
 
 ---
 
-## 📱 Application Preview
+<!--- ## 📱 Application Preview
 
 | Hero & WebGL Background | Interactive Surplus Harvest |
 | :---: | :---: |
@@ -195,6 +195,7 @@ graph TD
 | *O(1) view tag announcement scanning with instant sweeping* | *1-click publish to Base Sepolia MockL2Resolver & ERC-6538* |
 
 ---
+-->
 
 ## 📜 Deployed Contracts (Base Sepolia)
 
