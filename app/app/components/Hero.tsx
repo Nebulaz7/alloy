@@ -33,7 +33,7 @@ const Hero = () => {
         {/* Call to Actions */}
         <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
           <Link
-            href="/dashboard"
+            href="/login"
             className="inline-flex items-center gap-2 rounded-xl bg-[#007fff] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-[#0066ff] hover:shadow-blue-500/40 hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
           >
             <span>Launch App</span>
